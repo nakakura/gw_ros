@@ -10,7 +10,7 @@ find_package(catkin REQUIRED
 #add_message_files(DIRECTORY)
 #add_service_files(DIRECTORY)
 
-# Actually generate the language-specific message and service files
+# Actually generate the language-specific message and usecase files
 #generate_messages(DEPENDENCIES std_msgs)
 
 # Declare that this catkin package's runtime dependencies
