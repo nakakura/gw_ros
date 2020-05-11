@@ -1,4 +1,5 @@
 <launch>
-    <test test-name="service_peer_create_request" pkg="skyway" type="test_create_request.py" />
     <test test-name="domain_peer_model" pkg="skyway" type="test_peer_model.py" />
+    <test test-name="infra_rest" pkg="skyway" type="test_infra_rest.py" />
+    <test test-name="service_peer_create_request" pkg="skyway" type="test_create_request.py" />
 </launch>
