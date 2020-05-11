@@ -8,6 +8,6 @@ class IPeerApi:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def create_peer(self, params):
+    def create_request(self, params):
         # type: (CreateRequestParams) -> PeerInfo
         pass

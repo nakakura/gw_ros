@@ -29,7 +29,7 @@ class TestCreateRequest(unittest.TestCase):
         create_request = inject.provide(CreateRequest)
         json = {"key": "key", "domain": "localhost", "peer_id": "my_id", "turn": True}
         with patch(
-            "infra.peer.api.PeerApi.create_peer",
+            "infra.peer.api.PeerApi.create_request",
             return_value=PeerInfo("my_id", "token"),
         ):
             peer_info = create_request.create_request(json)
@@ -42,7 +42,7 @@ class TestCreateRequest(unittest.TestCase):
         # no domain
         json = {"key": "key", "peer_id": "my_id", "turn": True}
         with patch(
-            "infra.peer.api.PeerApi.create_peer",
+            "infra.peer.api.PeerApi.create_request",
             return_value=PeerInfo("my_id", "token"),
         ):
             with self.assertRaises(MyException):
@@ -53,7 +53,7 @@ class TestCreateRequest(unittest.TestCase):
         create_request = inject.provide(CreateRequest)
         json = {"key": "key", "domain": "localhost", "peer_id": "my_id", "turn": True}
         with patch(
-            "infra.peer.api.PeerApi.create_peer", side_effect=MyException("error")
+            "infra.peer.api.PeerApi.create_request", side_effect=MyException("error")
         ):
             with self.assertRaises(MyException):
                 _peer_info = create_request.create_request(json)

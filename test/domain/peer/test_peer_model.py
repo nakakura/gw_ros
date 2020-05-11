@@ -52,16 +52,16 @@ class TestModel(unittest.TestCase):
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
-    def test_create_peer_info_success(self):
+    def test_create_request_info_success(self):
         peer_info = PeerInfo("my_id", "token")
         self.assertEqual(peer_info.id(), "my_id")
         self.assertEqual(peer_info.token(), "token")
 
-    def test_create_peer_info_blank_id(self):
+    def test_create_request_info_blank_id(self):
         with self.assertRaises(MyException):
             peer_info = PeerInfo("", "token")
 
-    def test_create_peer_blank_token(self):
+    def test_create_request_blank_token(self):
         with self.assertRaises(MyException):
             peer_info = PeerInfo("my_id", "")
 

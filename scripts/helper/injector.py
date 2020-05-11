@@ -10,4 +10,4 @@ class BindingSpec(pinject.BindingSpec):
 
     @pinject.provides("peer_api", annotated_with="PeerApi")
     def provide_peer_api(self):
-        return PeerApi()
+        return PeerApi("http://localhost:8000")
