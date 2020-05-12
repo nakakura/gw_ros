@@ -3,4 +3,5 @@
     <test test-name="infra_peer_api" pkg="skyway" type="test_infra_peer_api.py" />
     <test test-name="infra_rest" pkg="skyway" type="test_infra_rest.py" />
     <test test-name="service_peer_create_request" pkg="skyway" type="test_create_request.py" />
+    <test test-name="service_subscribe_events" pkg="skyway" type="test_subscribe_events.py" />
 </launch>

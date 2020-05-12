@@ -16,3 +16,13 @@ class PeerApi(IPeerApi):
         # type: (CreateRequestParams) -> PeerInfo
         json = self.__rest.post("peers", param.json(), 201)
         return PeerInfo(json["params"]["peer_id"], json["params"]["token"])
+
+    def listen_event(self, peer_info):
+        """
+        Get an event of PeerObject
+
+        :param PeerInfo peer_info: Indicates which peer object to subscribe events
+        :return: An event from PeerObject
+        :rtype: PeerEvent
+        """
+        pass

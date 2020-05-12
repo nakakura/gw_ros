@@ -85,6 +85,9 @@ class PeerInfo:
             return NotImplemented
         return self.__peer_id == other.__peer_id and self.__token == other.__token
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class PeerEvent:
     def __init__(self, json):
@@ -123,6 +126,10 @@ class PeerEvent:
         else:
             raise MyException("This json is not an peer event")
 
+    def type(self):
+        # type: () -> str
+        return self.__event
+
     def peer_info(self):
         # type: () -> PeerInfo
         return self.__peer_info
@@ -138,6 +145,30 @@ class PeerEvent:
     def error_message(self):
         # type: () -> str
         return self.__error_message
+
+    def __eq__(self, other):
+        if not isinstance(other, PeerEvent):
+            return NotImplemented
+
+        if self.type() != other.type() or self.peer_info() != other.peer_info():
+            return False
+
+        if self.type() == "OPEN" or self.type() == "CLOSE":
+            return True
+
+        if self.type() == "CALL":
+            return self.media_connection_id() == other.media_connection_id()
+
+        if self.type() == "CONNECTION":
+            return self.data_connection_id() == other.data_connection_id()
+
+        if self.type() == "ERROR":
+            return self.error_message() == other.error_message()
+
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class MediaConnectionId:
@@ -157,6 +188,15 @@ class MediaConnectionId:
         # type: () -> str
         return self.__media_connection_id
 
+    def __eq__(self, other):
+        if not isinstance(other, MediaConnectionId):
+            return NotImplemented
+
+        return self.id() == other.id()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class DataConnectionId:
     def __init__(self, data_connection_id):
@@ -174,3 +214,12 @@ class DataConnectionId:
     def id(self):
         # type: () -> str
         return self.__data_connection_id
+
+    def __eq__(self, other):
+        if not isinstance(other, MediaConnectionId):
+            return NotImplemented
+
+        return self.id() == other.id()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 
-from model import CreateRequestParams, PeerInfo
+from model import CreateRequestParams, PeerEvent, PeerInfo
 
 
 class IPeerApi:
@@ -10,4 +10,15 @@ class IPeerApi:
     @abstractmethod
     def create_request(self, params):
         # type: (CreateRequestParams) -> PeerInfo
+        pass
+
+    @abstractmethod
+    def listen_event(self, peer_info):
+        """
+        Get an event of PeerObject
+
+        :param PeerInfo peer_info: Indicates which peer object to subscribe events
+        :return: An event from PeerObject
+        :rtype: PeerEvent
+        """
         pass
