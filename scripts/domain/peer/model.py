@@ -63,7 +63,12 @@ class PeerInfo:
             raise MyException("peer_id: invalid parameter in PeerInfo")
         self.__peer_id = peer_id
 
-        if not isinstance(token, str) or len(token) == 0:
+        # TOKEN is prefix(pt-, 3words) + UUID(36words) = 39words
+        if (
+            not isinstance(token, str)
+            or len(token) != 39
+            or not token.startswith("pt-")
+        ):
             raise MyException("token: invalid parameter in PeerInfo")
         self.__token = token
 
@@ -79,3 +84,93 @@ class PeerInfo:
         if not isinstance(other, PeerInfo):
             return NotImplemented
         return self.__peer_id == other.__peer_id and self.__token == other.__token
+
+
+class PeerEvent:
+    def __init__(self, json):
+        # type: (dict) -> None
+        if "event" not in json:
+            raise MyException("This json is not an event.")
+        self.__event = json["event"]
+
+        if self.__event == "OPEN":
+            self.__peer_info = PeerInfo(
+                json["params"]["peer_id"], json["params"]["token"]
+            )
+        elif self.__event == "CLOSE":
+            self.__peer_info = PeerInfo(
+                json["params"]["peer_id"], json["params"]["token"]
+            )
+        elif self.__event == "CALL":
+            self.__peer_info = PeerInfo(
+                json["params"]["peer_id"], json["params"]["token"]
+            )
+            self.__media_connection_id = MediaConnectionId(
+                json["call_params"]["media_connection_id"]
+            )
+        elif self.__event == "CONNECTION":
+            self.__peer_info = PeerInfo(
+                json["params"]["peer_id"], json["params"]["token"]
+            )
+            self.__data_connection_id = DataConnectionId(
+                json["data_params"]["data_connection_id"]
+            )
+        elif self.__event == "ERROR":
+            self.__peer_info = PeerInfo(
+                json["params"]["peer_id"], json["params"]["token"]
+            )
+            self.__error_message = json["error_message"]
+        else:
+            raise MyException("This json is not an peer event")
+
+    def peer_info(self):
+        # type: () -> PeerInfo
+        return self.__peer_info
+
+    def media_connection_id(self):
+        # type: () -> str
+        return self.__media_connection_id.id()
+
+    def data_connection_id(self):
+        # type: () -> str
+        return self.__data_connection_id.id()
+
+    def error_message(self):
+        # type: () -> str
+        return self.__error_message
+
+
+class MediaConnectionId:
+    def __init__(self, media_connection_id):
+        # type: (str) -> None
+
+        # TOKEN is prefix(mc-, 3words) + UUID(36words) = 39words
+        if (
+            not isinstance(media_connection_id, str)
+            or len(media_connection_id) != 39
+            or not media_connection_id.startswith("mc-")
+        ):
+            raise MyException("invalid media_connection_id")
+        self.__media_connection_id = media_connection_id
+
+    def id(self):
+        # type: () -> str
+        return self.__media_connection_id
+
+
+class DataConnectionId:
+    def __init__(self, data_connection_id):
+        # type: (str) -> None
+
+        # TOKEN is prefix(dc-, 3words) + UUID(36words) = 39words
+        if (
+            not isinstance(data_connection_id, str)
+            or len(data_connection_id) != 39
+            or not data_connection_id.startswith("dc-")
+        ):
+            raise MyException("invalid media_connection_id")
+        self.__data_connection_id = data_connection_id
+
+    def id(self):
+        # type: () -> str
+        return self.__data_connection_id

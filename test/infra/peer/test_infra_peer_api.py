@@ -28,12 +28,15 @@ class TestPeerApi(unittest.TestCase):
             "infra.rest.Rest.post",
             return_value={
                 "command_type": "PEERS_CREATE",
-                "params": {"peer_id": "my_id", "token": "token",},
+                "params": {
+                    "peer_id": "my_id",
+                    "token": "pt-102127d9-30de-413b-93f7-41a33e39d82b",
+                },
             },
         ) as mock_post:
             value = peer_api.create_request(params)
             self.assertEqual(value.id(), "my_id")
-            self.assertEqual(value.token(), "token")
+            self.assertEqual(value.token(), "pt-102127d9-30de-413b-93f7-41a33e39d82b")
 
 
 if __name__ == "__main__":
