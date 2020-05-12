@@ -19,7 +19,7 @@ sys.path.append(
     + "/scripts"
 )
 from domain.peer.model import PeerEvent, PeerInfo
-from usecase.peer.subscribe_events import SubscribeEvents
+from usecase.peer.subscribe_events import SubscribeEvents, ControlEnum
 from helper.injector import BindingSpec
 
 PKG = "skyway"
@@ -151,6 +151,28 @@ class TestSubscribeEvents(unittest.TestCase):
                     event_sink,
                 )
                 self.assertEqual(event_sink.get(), error_event)
+                with self.assertRaises(Queue.Empty):
+                    event_sink.get(timeout=0.1)
+            executor.shutdown()
+
+    def test_create_request_params_exit_with_control_src(self):
+        inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
+        event_subscriber = inject.provide(SubscribeEvents)
+        peer_info = (PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
+        control_src = multiprocessing.Queue()
+        control_src.put({"type": ControlEnum.APP_CLOSING})
+        event_sink = multiprocessing.Queue()
+        api_event_src = MagicMock()
+
+        with patch("infra.peer.api.PeerApi.listen_event", side_effect=api_event_src):
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(
+                    event_subscriber.subscribe_events,
+                    peer_info,
+                    control_src,
+                    event_sink,
+                )
+                self.assertFalse(api_event_src.called)
                 with self.assertRaises(Queue.Empty):
                     event_sink.get(timeout=0.1)
             executor.shutdown()
