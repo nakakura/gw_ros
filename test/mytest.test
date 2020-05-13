@@ -4,4 +4,5 @@
     <test test-name="infra_rest" pkg="skyway" type="test_infra_rest.py" />
     <test test-name="service_peer_create_request" pkg="skyway" type="test_create_request.py" />
     <test test-name="service_subscribe_events" pkg="skyway" type="test_subscribe_events.py" />
+    <test test-name="service_peer_delete_request" pkg="skyway" type="test_delete_request.py" />
 </launch>

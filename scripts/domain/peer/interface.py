@@ -22,3 +22,16 @@ class IPeerApi:
         :rtype: PeerEvent
         """
         pass
+
+    @abstractmethod
+    def delete_request(self, peer_info):
+        """
+        Send a Delete Request of PeerObject
+        Accessing DELETE /peer API Internally
+        http://35.200.46.204/#/1.peers/peer_destroy
+
+        :param PeerInfo peer_info: Indicates which peer object to be deleted
+        :return:
+        :rtype: None
+        """
+        pass
