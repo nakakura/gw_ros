@@ -3,7 +3,7 @@ import requests
 import simplejson
 
 from domain.peer.interface import IPeerApi
-from domain.peer.model import CreateRequestParams, PeerInfo
+from domain.peer.model import CreateRequestParams, PeerEvent, PeerInfo
 from infra.rest import Rest
 
 
@@ -25,4 +25,7 @@ class PeerApi(IPeerApi):
         :return: An event from PeerObject
         :rtype: PeerEvent
         """
-        pass
+        json = self.__rest.get(
+            "peers/{}/events?token={}".format(peer_info.id(), peer_info.token()), 200
+        )
+        return PeerEvent(json)
