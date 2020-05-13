@@ -35,3 +35,16 @@ class IPeerApi:
         :rtype: None
         """
         pass
+
+    @abstractmethod
+    def status_request(self, peer_info):
+        """
+        Request status of Peer Object
+        Accessing GET /peers/{peer_id}/status API Internally
+        http://35.200.46.204/#/1.peers/peer_status
+
+        :param PeerInfo peer_info: Indicates which peer object to be deleted
+        :return: Status of the PeerObject
+        :rtype: PeerStatus
+        """
+        pass

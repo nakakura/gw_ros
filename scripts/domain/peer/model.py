@@ -223,3 +223,36 @@ class DataConnectionId:
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
+class PeerStatus:
+    def __init__(self, peer_id, disconnected):
+        """
+        Status of a PeerObject
+        :param str peer_id: id of the PeerObject
+        :param bool disconnected: shows the peer object is disconnected or not
+        """
+
+        if not isinstance(peer_id, str) or len(peer_id) == 0:
+            raise MyException("peer_id: invalid parameter in PeerStatus")
+        self.__peer_id = peer_id
+
+        if not isinstance(disconnected, bool):
+            raise MyException("disconnected: invalid parameter in PeerStatus")
+        self.__disconnected = disconnected
+
+    def id(self):
+        # type: () -> str
+        return self.__peer_id
+
+    def disconnected(self):
+        # type: () -> bool
+        return self.__disconnected
+
+    def __eq__(self, other):
+        if not isinstance(other, PeerStatus):
+            return NotImplemented
+        return self.id() == other.id() and self.disconnected() == other.disconnected()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
