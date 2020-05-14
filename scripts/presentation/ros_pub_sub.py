@@ -19,7 +19,7 @@ def ros_publisher(display_src):
 
     while not rospy.is_shutdown():
         try:
-            message = display_src.get(timeout=0.1)
+            message = display_src.get(timeout=1.0)
             pub.publish(String(message))
             rate.sleep()
         except Queue.Empty:

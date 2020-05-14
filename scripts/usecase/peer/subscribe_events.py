@@ -2,6 +2,8 @@
 import pinject
 import Queue
 from enum import IntEnum
+import rospy
+import json as encoder
 
 from domain.peer.interface import IPeerApi
 from domain.peer.model import PeerInfo
@@ -19,33 +21,28 @@ class SubscribeEvents:
 
     # This method subscribes events.
     #
-    def subscribe_events(self, peer_info, control_src, event_sink):
+    def subscribe_events(self, peer_info, event_sink):
         """
         :param PeerInfo peer_info: Indicates which peer object to subscribe events
-        :param control_src: Controls runner in this method
         :param event_sink: Subscriber of the events
         :return: None
         :rtype: None
         """
 
-        while True:
+        while not rospy.is_shutdown():
             try:
-                message = control_src.get(timeout=0.1)
-                if message["type"] == ControlEnum.APP_CLOSING:
-                    break
-            except Queue.Empty:
-                # control_src usually doesn't hold a value
-                pass
+                event = self.__api.listen_event(peer_info)
+                event_sink.put(encoder.dumps(event.json()))
             except Exception as e:
-                raise e
-
-            event = self.__api.listen_event(peer_info)
-            event_sink.put(event)
-            if event.type() == "CLOSE":
-                # if event is "CLOSE", the peer object has already been deleted.
-                # So terminate the subscription
-                break
-            elif event.type() == "ERROR":
-                # if event is "ERROR", the peer object is something wrong.
-                # So terminate the subscription
-                break
+                rospy.logerr(e)
+            else:
+                if event.type() == "CLOSE":
+                    rate = rospy.Rate(1)
+                    rate.sleep()
+                    # if event is "CLOSE", the peer object has already been deleted.
+                    # So terminate the subscription
+                    break
+                elif event.type() == "ERROR":
+                    # if event is "ERROR", the peer object is something wrong.
+                    # So terminate the subscription
+                    break

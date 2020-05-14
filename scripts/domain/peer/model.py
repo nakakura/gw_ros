@@ -146,6 +146,21 @@ class PeerEvent:
         # type: () -> unicode
         return self.__error_message
 
+    def json(self):
+        # type: () -> dict
+        params = {}
+        params["type"] = self.__event
+        params["peer_id"] = self.peer_info().id()
+        params["token"] = self.peer_info().token()
+        if self.__event == "CALL":
+            params["media_connection_id"] = self.media_connection_id()
+        elif self.__event == "CONNECTION":
+            params["data_connection_id"] = self.data_connection_id()
+        elif self.__event == "ERROR":
+            params["error"] = self.error_message()
+
+        return params
+
     def __eq__(self, other):
         if not isinstance(other, PeerEvent):
             return NotImplemented
