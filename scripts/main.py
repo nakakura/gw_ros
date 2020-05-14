@@ -56,7 +56,7 @@ def main():
     except Exception:
         # Peer Object may be already deleted
         pass
-    rospy.signal_shutdown(0)
+    rospy.signal_shutdown("timeout")
     event_future.result()
     executor.shutdown()
 
