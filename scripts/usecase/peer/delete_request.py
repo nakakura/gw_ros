@@ -20,4 +20,5 @@ class DeleteRequest:
         :return:
         :rtype: None
         """
-        return self.__api.delete_request(peer_info)
+        self.__api.delete_request(peer_info)
+        return peer_info
