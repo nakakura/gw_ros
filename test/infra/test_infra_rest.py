@@ -194,7 +194,7 @@ class TestRest(unittest.TestCase):
         ) as mock_delete:
             rest = Rest("domain")
             response = rest.delete("url_204", 204)
-            self.assertEqual(response, {"key1": "value1"})
+            self.assertEqual(response, {})
             self.assertTrue(mock_delete.called)
             self.assertEqual(mock_delete.call_args[0][0], "domain/url_204")
 
