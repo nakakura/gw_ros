@@ -1,0 +1,16 @@
+peer:
+  peer_id: "peer_id"
+  domain: "localhost"
+  turn: true
+data:
+  - name: "data"
+    connect_params:
+      maxRetransmits: 0
+      ordered: false
+    redirect_params:
+      ip_v4: "127.0.0.1"
+      port: 10001
+media:
+  - name: "media"
+    video: true
+    audio: true

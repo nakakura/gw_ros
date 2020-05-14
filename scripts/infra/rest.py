@@ -15,6 +15,7 @@ class Rest:
     def __parse_response(resp, expected_code):
         # type: (requests.Response, int) -> dict
         if resp.status_code == expected_code:
+            # FIXME: 204 no content cannot return resp.json()
             return resp.json()
         elif resp.status_code == 400:
             raise MyException(
