@@ -7,6 +7,7 @@ import json as encoder
 
 from domain.peer.interface import IPeerApi
 from domain.peer.model import PeerInfo
+from error import MyException
 
 
 class ControlEnum(IntEnum):
@@ -33,7 +34,15 @@ class SubscribeEvents:
             try:
                 event = self.__api.listen_event(peer_info)
                 event_sink.put(encoder.dumps(event.json()))
+            except MyException as e:
+                message = e.message()
+                if message["status"] == 408:
+                    continue
+                else:
+                    rospy.logerr("queue error in subscribe_events")
+                    rospy.logerr(e)
             except Exception as e:
+                rospy.logerr("queue error in subscribe_events")
                 rospy.logerr(e)
             else:
                 if event.type() == "CLOSE":

@@ -45,7 +45,7 @@ def main():
     while not rospy.is_shutdown():
         rate.sleep()
         counter += 1
-        if counter > 5:
+        if counter > 300:
             delete_request = inject.provide(DeleteRequest)
             _result = delete_request.delete_request(peer_info)
             break

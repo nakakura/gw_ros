@@ -9,6 +9,10 @@ class MyException(Exception):
         else:
             self.__value = value
 
+    def message(self):
+        # type () -> dict
+        return self.__value
+
     def __eq__(self, other):
         if not isinstance(other, MyException):
             return NotImplemented
