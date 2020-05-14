@@ -27,16 +27,16 @@ class TestStatusRequest(unittest.TestCase):
     def test_status_request_params_success(self):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         status_request = inject.provide(StatusRequest)
-        param = PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b")
+        param = PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b")
 
         with patch(
             "infra.peer.api.PeerApi.status_request",
-            return_value=PeerStatus("my_id", False),
+            return_value=PeerStatus(u"my_id", False),
         ) as mock:
             result = status_request.status_request(param)
             self.assertTrue(mock.called)
             self.assertEqual(mock.call_args[0][0], param)
-            self.assertEqual(result, PeerStatus("my_id", False))
+            self.assertEqual(result, PeerStatus(u"my_id", False))
 
 
 if __name__ == "__main__":

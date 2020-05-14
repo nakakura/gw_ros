@@ -18,19 +18,19 @@ class CreateRequestParams:
         if "key" not in json:
             raise MyException("key: invalid parameter in CreateRequestParams")
         self.__key = json["key"]
-        if not isinstance(self.__key, str) or len(self.__key) == 0:
+        if not isinstance(self.__key, unicode) or len(self.__key) == 0:
             raise MyException("key: invalid parameter in CreateRequestParams")
 
         if "domain" not in json:
             raise MyException("domain: invalid parameter in CreateRequestParams")
         self.__domain = json["domain"]
-        if not isinstance(self.__domain, str) or len(self.__domain) == 0:
+        if not isinstance(self.__domain, unicode) or len(self.__domain) == 0:
             raise MyException("domain: invalid parameter in CreateRequestParams")
 
         if "peer_id" not in json:
             raise MyException("peer_id: invalid parameter in CreateRequestParams")
         self.__peer_id = json["peer_id"]
-        if not isinstance(self.__peer_id, str) or len(self.__peer_id) == 0:
+        if not isinstance(self.__peer_id, unicode) or len(self.__peer_id) == 0:
             raise MyException("peer_id: invalid parameter in CreateRequestParams")
 
         if "turn" not in json:
@@ -58,14 +58,14 @@ class PeerInfo:
     """
 
     def __init__(self, peer_id, token):
-        # type: (str, str) -> None
-        if not isinstance(peer_id, str) or len(peer_id) == 0:
+        # type: (unicode, unicode) -> None
+        if not isinstance(peer_id, unicode) or len(peer_id) == 0:
             raise MyException("peer_id: invalid parameter in PeerInfo")
         self.__peer_id = peer_id
 
         # TOKEN is prefix(pt-, 3words) + UUID(36words) = 39words
         if (
-            not isinstance(token, str)
+            not isinstance(token, unicode)
             or len(token) != 39
             or not token.startswith("pt-")
         ):
@@ -73,11 +73,11 @@ class PeerInfo:
         self.__token = token
 
     def id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__peer_id
 
     def token(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__token
 
     def __eq__(self, other):
@@ -127,7 +127,7 @@ class PeerEvent:
             raise MyException("This json is not an peer event")
 
     def type(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__event
 
     def peer_info(self):
@@ -135,15 +135,15 @@ class PeerEvent:
         return self.__peer_info
 
     def media_connection_id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__media_connection_id.id()
 
     def data_connection_id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__data_connection_id.id()
 
     def error_message(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__error_message
 
     def __eq__(self, other):
@@ -173,11 +173,11 @@ class PeerEvent:
 
 class MediaConnectionId:
     def __init__(self, media_connection_id):
-        # type: (str) -> None
+        # type: (unicode) -> None
 
         # TOKEN is prefix(mc-, 3words) + UUID(36words) = 39words
         if (
-            not isinstance(media_connection_id, str)
+            not isinstance(media_connection_id, unicode)
             or len(media_connection_id) != 39
             or not media_connection_id.startswith("mc-")
         ):
@@ -185,7 +185,7 @@ class MediaConnectionId:
         self.__media_connection_id = media_connection_id
 
     def id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__media_connection_id
 
     def __eq__(self, other):
@@ -200,11 +200,11 @@ class MediaConnectionId:
 
 class DataConnectionId:
     def __init__(self, data_connection_id):
-        # type: (str) -> None
+        # type: (unicode) -> None
 
         # TOKEN is prefix(dc-, 3words) + UUID(36words) = 39words
         if (
-            not isinstance(data_connection_id, str)
+            not isinstance(data_connection_id, unicode)
             or len(data_connection_id) != 39
             or not data_connection_id.startswith("dc-")
         ):
@@ -212,7 +212,7 @@ class DataConnectionId:
         self.__data_connection_id = data_connection_id
 
     def id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__data_connection_id
 
     def __eq__(self, other):
@@ -229,11 +229,11 @@ class PeerStatus:
     def __init__(self, peer_id, disconnected):
         """
         Status of a PeerObject
-        :param str peer_id: id of the PeerObject
+        :param unicode peer_id: id of the PeerObject
         :param bool disconnected: shows the peer object is disconnected or not
         """
 
-        if not isinstance(peer_id, str) or len(peer_id) == 0:
+        if not isinstance(peer_id, unicode) or len(peer_id) == 0:
             raise MyException("peer_id: invalid parameter in PeerStatus")
         self.__peer_id = peer_id
 
@@ -242,7 +242,7 @@ class PeerStatus:
         self.__disconnected = disconnected
 
     def id(self):
-        # type: () -> str
+        # type: () -> unicode
         return self.__peer_id
 
     def disconnected(self):

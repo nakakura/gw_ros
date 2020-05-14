@@ -29,7 +29,7 @@ class TestSubscribeEvents(unittest.TestCase):
     def test_create_request_params_success(self):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         event_subscriber = inject.provide(SubscribeEvents)
-        peer_info = (PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
+        peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
         control_src = multiprocessing.Queue()
         event_sink = multiprocessing.Queue()
         api_event_src = MagicMock()
@@ -37,8 +37,8 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "OPEN",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
             }
         )
@@ -46,11 +46,11 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "CONNECTION",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
                 "data_params": {
-                    "data_connection_id": "dc-102127d9-30de-413b-93f7-41a33e39d82b"
+                    "data_connection_id": u"dc-102127d9-30de-413b-93f7-41a33e39d82b"
                 },
             }
         )
@@ -58,11 +58,11 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "CALL",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
                 "call_params": {
-                    "media_connection_id": "mc-102127d9-30de-413b-93f7-41a33e39d82b"
+                    "media_connection_id": u"mc-102127d9-30de-413b-93f7-41a33e39d82b"
                 },
             }
         )
@@ -70,8 +70,8 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "CLOSE",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
             }
         )
@@ -79,11 +79,11 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "CALL",
                 "params": {
-                    "peer_id": "ThisEventWillNotBeReceived",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"ThisEventWillNotBeReceived",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
                 "call_params": {
-                    "media_connection_id": "mc-102127d9-30de-413b-93f7-41a33e39d82b"
+                    "media_connection_id": u"mc-102127d9-30de-413b-93f7-41a33e39d82b"
                 },
             }
         )
@@ -114,7 +114,7 @@ class TestSubscribeEvents(unittest.TestCase):
     def test_create_request_params_recv_error_event(self):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         event_subscriber = inject.provide(SubscribeEvents)
-        peer_info = (PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
+        peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
         control_src = multiprocessing.Queue()
         event_sink = multiprocessing.Queue()
         api_event_src = MagicMock()
@@ -122,18 +122,18 @@ class TestSubscribeEvents(unittest.TestCase):
             {
                 "event": "ERROR",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
-                "error_message": "BROWSER_INCOMPATIBLE",
+                "error_message": u"BROWSER_INCOMPATIBLE",
             }
         )
         open_event = PeerEvent(
             {
                 "event": "OPEN",
                 "params": {
-                    "peer_id": "hoge",
-                    "token": "pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
+                    "peer_id": u"hoge",
+                    "token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
                 },
             }
         )
@@ -158,7 +158,7 @@ class TestSubscribeEvents(unittest.TestCase):
     def test_create_request_params_exit_with_control_src(self):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         event_subscriber = inject.provide(SubscribeEvents)
-        peer_info = (PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
+        peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
         control_src = multiprocessing.Queue()
         control_src.put({"type": ControlEnum.APP_CLOSING})
         event_sink = multiprocessing.Queue()

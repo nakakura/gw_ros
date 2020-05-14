@@ -27,11 +27,11 @@ class TestDeleteRequest(unittest.TestCase):
     def test_delete_request_params_success(self):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         delete_request = inject.provide(DeleteRequest)
-        param = PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b")
+        param = PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b")
 
         with patch(
             "infra.peer.api.PeerApi.delete_request",
-            return_value=PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b"),
+            return_value=PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
         ) as mock:
             delete_request.delete_request(param)
             self.assertTrue(mock.called)
