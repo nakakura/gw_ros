@@ -18,6 +18,7 @@ PKG = "skyway"
 class TestDataModel(unittest.TestCase):
     # ----------CreateRequestParams----------
     def test_create_request_params_success(self):
+        self.assertTrue(True)
         pass
 
 

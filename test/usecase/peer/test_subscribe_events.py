@@ -10,6 +10,7 @@ from mock import patch, MagicMock
 import concurrent.futures
 import Queue
 import multiprocessing
+import json as encoder
 
 sys.path.append(
     path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
@@ -30,7 +31,6 @@ class TestSubscribeEvents(unittest.TestCase):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         event_subscriber = inject.provide(SubscribeEvents)
         peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
-        control_src = multiprocessing.Queue()
         event_sink = multiprocessing.Queue()
         api_event_src = MagicMock()
         open_event = PeerEvent(
@@ -98,15 +98,14 @@ class TestSubscribeEvents(unittest.TestCase):
         with patch("infra.peer.api.PeerApi.listen_event", side_effect=api_event_src):
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 executor.submit(
-                    event_subscriber.subscribe_events,
-                    peer_info,
-                    control_src,
-                    event_sink,
+                    event_subscriber.subscribe_events, peer_info, event_sink,
                 )
-                self.assertEqual(event_sink.get(), open_event)
-                self.assertEqual(event_sink.get(), call_event)
-                self.assertEqual(event_sink.get(), connection_event)
-                self.assertEqual(event_sink.get(), close_event)
+                self.assertEqual(event_sink.get(), encoder.dumps(open_event.json()))
+                self.assertEqual(event_sink.get(), encoder.dumps(call_event.json()))
+                self.assertEqual(
+                    event_sink.get(), encoder.dumps(connection_event.json())
+                )
+                self.assertEqual(event_sink.get(), encoder.dumps(close_event.json()))
                 with self.assertRaises(Queue.Empty):
                     event_sink.get(timeout=0.1)
             executor.shutdown()
@@ -115,7 +114,6 @@ class TestSubscribeEvents(unittest.TestCase):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         event_subscriber = inject.provide(SubscribeEvents)
         peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
-        control_src = multiprocessing.Queue()
         event_sink = multiprocessing.Queue()
         api_event_src = MagicMock()
         error_event = PeerEvent(
@@ -145,34 +143,9 @@ class TestSubscribeEvents(unittest.TestCase):
         with patch("infra.peer.api.PeerApi.listen_event", side_effect=api_event_src):
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 executor.submit(
-                    event_subscriber.subscribe_events,
-                    peer_info,
-                    control_src,
-                    event_sink,
+                    event_subscriber.subscribe_events, peer_info, event_sink,
                 )
-                self.assertEqual(event_sink.get(), error_event)
-                with self.assertRaises(Queue.Empty):
-                    event_sink.get(timeout=0.1)
-            executor.shutdown()
-
-    def test_create_request_params_exit_with_control_src(self):
-        inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
-        event_subscriber = inject.provide(SubscribeEvents)
-        peer_info = (PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),)
-        control_src = multiprocessing.Queue()
-        control_src.put({"type": ControlEnum.APP_CLOSING})
-        event_sink = multiprocessing.Queue()
-        api_event_src = MagicMock()
-
-        with patch("infra.peer.api.PeerApi.listen_event", side_effect=api_event_src):
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-                executor.submit(
-                    event_subscriber.subscribe_events,
-                    peer_info,
-                    control_src,
-                    event_sink,
-                )
-                self.assertFalse(api_event_src.called)
+                self.assertEqual(event_sink.get(), encoder.dumps(error_event.json()))
                 with self.assertRaises(Queue.Empty):
                     event_sink.get(timeout=0.1)
             executor.shutdown()

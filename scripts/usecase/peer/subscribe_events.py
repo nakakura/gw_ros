@@ -46,8 +46,6 @@ class SubscribeEvents:
                 rospy.logerr(e)
             else:
                 if event.type() == "CLOSE":
-                    rate = rospy.Rate(1)
-                    rate.sleep()
                     # if event is "CLOSE", the peer object has already been deleted.
                     # So terminate the subscription
                     break
