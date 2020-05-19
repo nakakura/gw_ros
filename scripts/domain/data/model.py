@@ -15,17 +15,20 @@ class DataId:
             or len(data_id) != 39
             or not data_id.startswith("da-")
         ):
-            raise MyException("invalid media_connection_id")
-        self.__data_connection_id = data_id
+            raise MyException("invalid data_connection_id")
+        self.__data_id = data_id
 
     def id(self):
         # type: () -> unicode
-        return self.__data_connection_id
+        return self.__data_id
 
     def __eq__(self, other):
-        if not isinstance(other, DataConnectionId):
+        if not isinstance(other, DataId):
             return NotImplemented
 
+        import rospy
+
+        rospy.logerr("in eq {}, {}", self.id(), other.id())
         return self.id() == other.id()
 
     def __ne__(self, other):
