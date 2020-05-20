@@ -119,7 +119,7 @@ class DataId:
             or len(data_id) != 39
             or not data_id.startswith("da-")
         ):
-            raise MyException("invalid data_connection_id")
+            raise MyException("invalid data_id")
         self.__data_id = data_id
 
     def id(self):
