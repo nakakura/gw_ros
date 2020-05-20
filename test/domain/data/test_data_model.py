@@ -12,6 +12,7 @@ sys.path.append(
 )
 from error import MyException
 from domain.data.model import *
+from domain.common.model import PeerInfo
 
 PKG = "skyway"
 
@@ -519,6 +520,57 @@ class TestDataModel(unittest.TestCase):
                     },
                 }
             )
+
+    def test_connect_parameters(self):
+        param = ConnectParameters(
+            PeerInfo(u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"),
+            "target_id",
+            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
+            Socket(10000, ip_v4=u"127.0.0.1"),
+            options={
+                "metadata": "string",
+                "serialization": "string",
+                "dcInit": {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "string",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "string",
+                },
+            },
+        )
+        json = param.json()
+        self.assertEqual(
+            json["peer_id"], u"peer_id",
+        )
+        self.assertEqual(
+            json["token"], u"pt-9749250e-d157-4f80-9ee2-359ce8524308",
+        )
+        self.assertEqual(
+            json["options"],
+            {
+                "metadata": "string",
+                "serialization": "string",
+                "dcInit": {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "string",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "string",
+                },
+            },
+        )
+        self.assertEqual(json["target_id"], "target_id")
+        self.assertEqual(
+            json["params"], {"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"},
+        )
+        self.assertEqual(
+            json["redirect_params"], {"ip_v4": u"127.0.0.1", "port": 10000,},
+        )
 
 
 if __name__ == "__main__":

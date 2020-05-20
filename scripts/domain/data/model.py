@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from error import MyException
+from domain.common.model import DataId, DataConnectionId
 
 
 class Socket:
@@ -119,63 +120,6 @@ class DataSocket:
         return not self.__eq__(other)
 
 
-class DataId:
-    def __init__(self, data_id):
-        """
-        a Value object of data_id
-        :param unicode data_id: ID to identify the socket that will receive the data from the end user program
-        """
-
-        # TOKEN is prefix(da-, 3words) + UUID(36words) = 39words
-        if (
-            not isinstance(data_id, unicode)
-            or len(data_id) != 39
-            or not data_id.startswith("da-")
-        ):
-            raise MyException("invalid data_id")
-        self.__data_id = data_id
-
-    def id(self):
-        # type: () -> unicode
-        return self.__data_id
-
-    def __eq__(self, other):
-        if not isinstance(other, DataId):
-            return NotImplemented
-
-        return self.id() == other.id()
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-
-class DataConnectionId:
-    def __init__(self, data_connection_id):
-        # type: (unicode) -> None
-
-        # TOKEN is prefix(dc-, 3words) + UUID(36words) = 39words
-        if (
-            not isinstance(data_connection_id, unicode)
-            or len(data_connection_id) != 39
-            or not data_connection_id.startswith("dc-")
-        ):
-            raise MyException("invalid media_connection_id")
-        self.__data_connection_id = data_connection_id
-
-    def id(self):
-        # type: () -> unicode
-        return self.__data_connection_id
-
-    def __eq__(self, other):
-        if not isinstance(other, DataConnectionId):
-            return NotImplemented
-
-        return self.id() == other.id()
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-
 class DcInit:
     def __init__(self, dict):
         """
@@ -287,3 +231,40 @@ class ConnectInnerOption:
             json["dcInit"] = self.dcInit.json()
 
         return json
+
+
+class ConnectParameters:
+    def __init__(self, peer_info, target_id, data_id, redirect_params, options=None):
+        """
+        Body of POST /data/connections
+        http://35.200.46.204/#/2.data/data_connections_create
+
+        :param PeerInfo peer_info:
+        :param strtarget_id:
+        :param DataId data_id:
+        :param Socket redirect_params:
+        :param dict options:
+        """
+        if options is None:
+            options = {}
+        self.__peer_info = peer_info
+        self.__target_id = target_id
+        self.__data_id = data_id
+        self.__redirect_params = redirect_params
+        self.__options = ConnectInnerOption(options)
+
+    def json(self):
+        """
+        return parameters as JSON
+        :return: json
+        :rtype: dict
+        """
+
+        return {
+            "peer_id": self.__peer_info.id(),
+            "token": self.__peer_info.token(),
+            "target_id": self.__target_id,
+            "params": {"data_id": self.__data_id.id()},
+            "redirect_params": self.__redirect_params.json(),
+            "options": self.__options.json(),
+        }
