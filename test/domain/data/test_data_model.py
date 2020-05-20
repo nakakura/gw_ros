@@ -11,7 +11,7 @@ sys.path.append(
     + "/scripts"
 )
 from error import MyException
-from domain.data.model import Socket, DataSocket, DataId, DataConnectionId
+from domain.data.model import Socket, DataSocket, DataId, DataConnectionId, DcInit
 
 PKG = "skyway"
 
@@ -202,6 +202,242 @@ class TestDataModel(unittest.TestCase):
         with self.assertRaises(MyException):
             _data_connection_id = DataConnectionId(
                 u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"
+            )
+
+    def test_create_dcinit(self):
+        dc_init1 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init1.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            },
+        )
+        dc_init2 = DcInit(
+            {
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init2.json(),
+            {
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            },
+        )
+        dc_init3 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init3.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            },
+        )
+        dc_init4 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init4.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            },
+        )
+        dc_init5 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "id": 0,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init5.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "id": 0,
+                "priority": "NONE",
+            },
+        )
+        dc_init6 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "priority": "NONE",
+            }
+        )
+        self.assertEqual(
+            dc_init6.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "priority": "NONE",
+            },
+        )
+        dc_init7 = DcInit(
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+            }
+        )
+        self.assertEqual(
+            dc_init7.json(),
+            {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+            },
+        )
+
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": 0,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": "0",
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": "0",
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": 0,
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": "HOGE",
+                    "id": 0,
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": "0",
+                    "priority": "NONE",
+                }
+            )
+        with self.assertRaises(MyException):
+            _dc_init_err = DcInit(
+                {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": 0,
+                }
             )
 
 

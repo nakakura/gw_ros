@@ -174,3 +174,75 @@ class DataConnectionId:
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
+class DcInit:
+    def __init__(self, dict):
+        """
+        DcInit Parameter
+        :param dict dict:
+        """
+        if "ordered" in dict:
+            self.ordered = dict["ordered"]
+            if not isinstance(self.ordered, bool):
+                raise MyException("invalid parameter of ordered in DcInit")
+
+        if "maxPacketLifeTime" in dict:
+            self.maxPacketLifeTime = dict["maxPacketLifeTime"]
+            if not isinstance(self.maxPacketLifeTime, int):
+                raise MyException("invalid parameter of maxPacketLifeTime in DcInit")
+
+        if "maxRetransmits" in dict:
+            self.maxRetransmits = dict["maxRetransmits"]
+            if not isinstance(self.maxRetransmits, int):
+                raise MyException("invalid parameter of maxRetransmits in DcInit")
+
+        if "protocol" in dict:
+            self.protocol = dict["protocol"]
+            if not isinstance(self.protocol, str):
+                raise MyException("invalid parameter of protocol in DcInit")
+
+        if "negotiated" in dict:
+            self.negotiated = dict["negotiated"]
+            if not isinstance(self.negotiated, bool):
+                raise MyException("invalid parameter of negotiated in DcInit")
+
+        if "id" in dict:
+            self.id = dict["id"]
+            if not isinstance(self.id, int):
+                raise MyException("invalid parameter of id in DcInit")
+
+        if "priority" in dict:
+            self.priority = dict["priority"]
+            if not isinstance(self.priority, str):
+                raise MyException("invalid parameter of priority in DcInit")
+
+    def json(self):
+        """
+        return parameters as JSON
+        :return: json
+        :rtype: dict
+        """
+        json = {}
+        if hasattr(self, "ordered"):
+            json["ordered"] = self.ordered
+
+        if hasattr(self, "maxPacketLifeTime"):
+            json["maxPacketLifeTime"] = self.maxPacketLifeTime
+
+        if hasattr(self, "maxRetransmits"):
+            json["maxRetransmits"] = self.maxRetransmits
+
+        if hasattr(self, "protocol"):
+            json["protocol"] = self.protocol
+
+        if hasattr(self, "negotiated"):
+            json["negotiated"] = self.negotiated
+
+        if hasattr(self, "id"):
+            json["id"] = self.id
+
+        if hasattr(self, "priority"):
+            json["priority"] = self.priority
+
+        return json
