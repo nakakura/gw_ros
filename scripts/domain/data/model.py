@@ -246,3 +246,44 @@ class DcInit:
             json["priority"] = self.priority
 
         return json
+
+
+class ConnectInnerOption:
+    def __init__(self, json):
+        """
+        Internal Options of ConnectOption
+        :param dict json:
+        """
+        if "metadata" in json:
+            self.metadata = json["metadata"]
+            if not isinstance(self.metadata, str):
+                raise MyException("invalid parameter of metadata in ConnectInnerOption")
+
+        if "serialization" in json:
+            self.serialization = json["serialization"]
+            if not isinstance(self.serialization, str):
+                raise MyException(
+                    "invalid parameter of serialization in ConnectInnerOption"
+                )
+
+        if "dcInit" in json:
+            self.dcInit = DcInit(json["dcInit"])
+
+    def json(self):
+        """
+        return parameters as JSON
+        :return: json
+        :rtype: dict
+        """
+
+        json = {}
+        if hasattr(self, "metadata"):
+            json["metadata"] = self.metadata
+
+        if hasattr(self, "serialization"):
+            json["serialization"] = self.serialization
+
+        if hasattr(self, "dcInit"):
+            json["dcInit"] = self.dcInit.json()
+
+        return json

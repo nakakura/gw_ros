@@ -11,7 +11,7 @@ sys.path.append(
     + "/scripts"
 )
 from error import MyException
-from domain.data.model import Socket, DataSocket, DataId, DataConnectionId, DcInit
+from domain.data.model import *
 
 PKG = "skyway"
 
@@ -437,6 +437,86 @@ class TestDataModel(unittest.TestCase):
                     "negotiated": True,
                     "id": 0,
                     "priority": 0,
+                }
+            )
+
+    def test_create_connect_inner_option(self):
+        inner_option = ConnectInnerOption(
+            {
+                "metadata": "meta message",
+                "serialization": "BINARY",
+                "dcInit": {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                },
+            },
+        )
+        self.assertEqual(
+            inner_option.json(),
+            {
+                "metadata": "meta message",
+                "serialization": "BINARY",
+                "dcInit": {
+                    "ordered": True,
+                    "maxPacketLifeTime": 0,
+                    "maxRetransmits": 0,
+                    "protocol": "H264",
+                    "negotiated": True,
+                    "id": 0,
+                    "priority": "NONE",
+                },
+            },
+        )
+
+        inner_option2 = ConnectInnerOption({"metadata": "meta message", "dcInit": {},},)
+        self.assertEqual(
+            inner_option2.json(), {"metadata": "meta message", "dcInit": {},},
+        )
+
+        inner_option3 = ConnectInnerOption(
+            {"metadata": "meta message", "serialization": "BINARY",},
+        )
+        self.assertEqual(
+            inner_option3.json(),
+            {"metadata": "meta message", "serialization": "BINARY",},
+        )
+
+        with self.assertRaises(MyException):
+            _inner_option_err = ConnectInnerOption(
+                {
+                    "metadata": 0,
+                    "serialization": "BINARY",
+                    "dcInit": {
+                        "ordered": True,
+                        "maxPacketLifeTime": 0,
+                        "maxRetransmits": 0,
+                        "protocol": "H264",
+                        "negotiated": True,
+                        "id": 0,
+                        "priority": "NONE",
+                    },
+                }
+            )
+
+        with self.assertRaises(MyException):
+            _inner_option_err = ConnectInnerOption(
+                {
+                    "metadata": "meta message",
+                    "serialization": 0,
+                    "dcInit": {
+                        "ordered": True,
+                        "maxPacketLifeTime": 0,
+                        "maxRetransmits": 0,
+                        "protocol": "H264",
+                        "negotiated": True,
+                        "id": 0,
+                        "priority": "NONE",
+                    },
                 }
             )
 
