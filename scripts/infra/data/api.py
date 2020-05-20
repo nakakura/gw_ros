@@ -2,7 +2,7 @@
 import requests
 import simplejson
 
-from domain.data.model import DataSocket
+from domain.data.model import DataSocket, DataId
 from domain.data.interface import IDataApi
 from infra.rest import Rest
 
@@ -23,3 +23,11 @@ class DataApi(IDataApi):
             return DataSocket(json[u"data_id"], json[u"port"], ip_v4=json[u"ip_v4"])
         else:
             return DataSocket(json[u"data_id"], json[u"port"], ip_v6=json[u"ip_v6"])
+
+    def close_data_socket_request(self, data_id):
+        """
+        Have WebRTC Gateway close the socket
+        :param DataId data_id:
+        :return:
+        """
+        self.__rest.delete("data/{}".format(data_id.id()), 204)

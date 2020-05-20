@@ -14,6 +14,7 @@ sys.path.append(
     + "/scripts"
 )
 from infra.data.api import DataApi
+from domain.data.model import DataId
 
 PKG = "skyway"
 
@@ -38,6 +39,16 @@ class TestDataApi(unittest.TestCase):
             self.assertEqual(socket.port(), 10001)
             self.assertEqual(socket.ip_v4(), u"127.0.0.1")
             self.assertEqual(socket.ip_v6(), u"")
+
+    def test_close_data_socket(self):
+        data_api = DataApi("dummy")
+        data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+        with patch("infra.rest.Rest.delete", return_value={},) as mock:
+            data_api.close_data_socket_request(data_id)
+            self.assertTrue(mock.called)
+            self.assertEqual(
+                mock.call_args[0][0], "data/da-50a32bab-b3d9-4913-8e20-f79c90a6a211"
+            )
 
 
 if __name__ == "__main__":
