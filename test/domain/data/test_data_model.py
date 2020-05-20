@@ -63,10 +63,12 @@ class TestDataModel(unittest.TestCase):
         self.assertEqual(socket.is_ip_v4(), True)
         self.assertEqual(socket.ip_v4(), u"127.0.0.1")
         self.assertEqual(socket.ip_v6(), u"")
+        self.assertEqual(socket.json(), {"port": 65535, "ip_v4": u"127.0.0.1"})
         self.assertEqual(socket2.port(), 65535)
         self.assertEqual(socket2.is_ip_v4(), False)
         self.assertEqual(socket2.ip_v4(), u"")
         self.assertEqual(socket2.ip_v6(), u"fe00::1")
+        self.assertEqual(socket2.json(), {"port": 65535, "ip_v6": u"fe00::1"})
         self.assertNotEqual(socket, socket2)
 
     def test_create_socket_fail_due_to_port_num(self):

@@ -60,6 +60,19 @@ class Socket:
         """
         return self.__ip_v6
 
+    def json(self):
+        """
+        return JSON value of thie object
+        :return: json
+        :rtypr: dict
+        """
+        json = {"port": self.port()}
+        if self.is_ip_v4():
+            json["ip_v4"] = self.ip_v4()
+        else:
+            json["ip_v6"] = self.ip_v6()
+        return json
+
     def __eq__(self, other):
         if not isinstance(other, Socket):
             return NotImplemented
