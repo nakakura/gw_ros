@@ -2,7 +2,7 @@
 import requests
 import simplejson
 
-from domain.data.model import DataSocket, DataId
+from domain.data.model import DataSocket, DataId, ConnectParameters, DataConnectionId
 from domain.data.interface import IDataApi
 from infra.rest import Rest
 
@@ -31,3 +31,13 @@ class DataApi(IDataApi):
         :return:
         """
         self.__rest.delete("data/{}".format(data_id.id()), 204)
+
+    def connect_request(self, params):
+        """
+        Establish DataConnection to an other peer
+        :param ConnectParameters params:
+        :return: data connection id
+        :rtype: DataConnectionId
+        """
+        json = self.__rest.post("data/connections", params.json(), 202)
+        return DataConnectionId(json["params"]["data_connection_id"])
