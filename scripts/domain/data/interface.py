@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 
-from model import DataSocket, ConnectParameters, RedirectParameters
+from model import DataSocket, ConnectParameters, RedirectParameters, Status
 from domain.common.model import DataId, DataConnectionId
 
 
@@ -31,4 +31,9 @@ class IDataApi:
     @abstractmethod
     def redirect_request(self, data_connection_id, redirect_params):
         # type: (DataConnectionId, RedirectParameters) -> DataId
+        pass
+
+    @abstractmethod
+    def status_request(self, data_connection_id):
+        # type: (DataConnectionId) -> Status
         pass

@@ -292,3 +292,19 @@ class RedirectParameters:
             "feed_params": {"data_id": self.__data_id.id()},
             "redirect_params": self.__redirect_params.json(),
         }
+
+
+class Status:
+    def __init__(self, json):
+        """
+        Shows status of DataConnection
+        :param dict json:
+        """
+        self.remote_id = json["remote_id"]
+        self.buffersize = json["buffersize"]
+        self.label = json["label"]
+        self.metadata = json["metadata"]
+        self.open = json["open"]
+        self.reliable = json["reliable"]
+        self.serialization = json["serialization"]
+        self.type = json["type"]

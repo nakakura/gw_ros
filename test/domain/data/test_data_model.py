@@ -585,6 +585,28 @@ class TestDataModel(unittest.TestCase):
             },
         )
 
+    def test_status(self):
+        param = Status(
+            {
+                "remote_id": "ID_BAR",
+                "buffersize": 0,
+                "label": "string",
+                "metadata": "metadata",
+                "open": True,
+                "reliable": True,
+                "serialization": "BINARY_UTF8",
+                "type": "DATA",
+            }
+        )
+        self.assertEqual(param.remote_id, "ID_BAR")
+        self.assertEqual(param.buffersize, 0)
+        self.assertEqual(param.label, "string")
+        self.assertEqual(param.metadata, "metadata")
+        self.assertEqual(param.open, True)
+        self.assertEqual(param.reliable, True)
+        self.assertEqual(param.serialization, "BINARY_UTF8")
+        self.assertEqual(param.type, "DATA")
+
 
 if __name__ == "__main__":
     import rostest
