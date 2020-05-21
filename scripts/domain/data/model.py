@@ -268,3 +268,27 @@ class ConnectParameters:
             "redirect_params": self.__redirect_params.json(),
             "options": self.__options.json(),
         }
+
+
+class RedirectParameters:
+    def __init__(self, data_id, redirect_params):
+        """
+        Sets the redirect destination for the received data.
+        Also, set information to indicate which data to send
+        :param DataId data_id: Indicate which data to send
+        :param Socket redirect_params: redirect destination for the received data
+        """
+        self.__data_id = data_id
+        self.__redirect_params = redirect_params
+
+    def json(self):
+        """
+        return parameters as JSON
+        :return: json
+        :rtype: dict
+        """
+
+        return {
+            "feed_params": {"data_id": self.__data_id.id()},
+            "redirect_params": self.__redirect_params.json(),
+        }

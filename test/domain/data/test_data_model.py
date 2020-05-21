@@ -572,6 +572,19 @@ class TestDataModel(unittest.TestCase):
             json["redirect_params"], {"ip_v4": u"127.0.0.1", "port": 10000,},
         )
 
+    def test_redirect_params(self):
+        param = RedirectParameters(
+            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
+            Socket(10000, ip_v4=u"127.0.0.1"),
+        )
+        self.assertEqual(
+            param.json(),
+            {
+                "feed_params": {"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"},
+                "redirect_params": {"ip_v4": u"127.0.0.1", "port": 10000,},
+            },
+        )
+
 
 if __name__ == "__main__":
     import rostest

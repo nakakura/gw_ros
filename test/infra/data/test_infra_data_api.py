@@ -14,8 +14,8 @@ sys.path.append(
     + "/scripts"
 )
 from infra.data.api import DataApi
-from domain.data.model import DataId, DataConnectionId, ConnectParameters, Socket
-from domain.common.model import PeerInfo
+from domain.data.model import ConnectParameters, Socket, RedirectParameters
+from domain.common.model import PeerInfo, DataId, DataConnectionId
 
 PKG = "skyway"
 
@@ -104,6 +104,39 @@ class TestDataApi(unittest.TestCase):
                 "data/connections/dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
             )
             self.assertEqual(mock.call_args[0][1], 204)
+
+    def test_redirect_data_connection(self):
+        data_api = DataApi("dummy")
+        data_connection_id = DataConnectionId(
+            u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
+        )
+        data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+        socket = Socket(10000, ip_v4=u"127.0.0.1")
+        redirect_param = RedirectParameters(data_id, socket)
+        with patch(
+            "infra.rest.Rest.put",
+            return_value={
+                "command_type": "DATA_CONNECTION_PUT",
+                "data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+            },
+        ) as mock:
+            ret_id = data_api.redirect_request(data_connection_id, redirect_param)
+            self.assertTrue(mock.called)
+            self.assertEqual(
+                mock.call_args[0][0],
+                "data/connections/dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+            )
+            self.assertEqual(
+                mock.call_args[0][1],
+                {
+                    "feed_params": {
+                        "data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+                    },
+                    "redirect_params": {"ip_v4": u"127.0.0.1", "port": 10000,},
+                },
+            )
+            self.assertEqual(mock.call_args[0][2], 200)
+            self.assertEqual(ret_id, data_id)
 
 
 if __name__ == "__main__":

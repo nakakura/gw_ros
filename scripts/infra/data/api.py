@@ -2,7 +2,8 @@
 import requests
 import simplejson
 
-from domain.data.model import DataSocket, DataId, ConnectParameters, DataConnectionId
+from domain.data.model import DataSocket, ConnectParameters, RedirectParameters
+from domain.common.model import DataId, DataConnectionId
 from domain.data.interface import IDataApi
 from infra.rest import Rest
 
@@ -48,3 +49,19 @@ class DataApi(IDataApi):
         :param DataConnectionId data_connection_id:
         """
         self.__rest.delete("data/connections/{}".format(data_connection_id.id()), 204)
+
+    def redirect_request(self, data_connection_id, redirect_params):
+        """
+        Sets the redirect destination for the received data.
+        Also, set information to indicate which data to send
+        :param DataConnectionId data_connection_id: Identify which DataConnection to configure
+        :param RedirectParameters redirect_params: Configure Parameter
+        :return: data id
+        :rtype: DataId
+        """
+        json = self.__rest.put(
+            "data/connections/{}".format(data_connection_id.id()),
+            redirect_params.json(),
+            200,
+        )
+        return DataId(json["data_id"])
