@@ -91,6 +91,20 @@ class TestDataApi(unittest.TestCase):
                 data_connection_id.id(), u"dc-4995f372-fb6a-4196-b30a-ce11e5c7f56c"
             )
 
+    def test_close_data_connection(self):
+        data_api = DataApi("dummy")
+        data_connection_id = DataConnectionId(
+            u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
+        )
+        with patch("infra.rest.Rest.delete", return_value={},) as mock:
+            data_api.disconnect_request(data_connection_id)
+            self.assertTrue(mock.called)
+            self.assertEqual(
+                mock.call_args[0][0],
+                "data/connections/dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+            )
+            self.assertEqual(mock.call_args[0][1], 204)
+
 
 if __name__ == "__main__":
     import rostest

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 
-from model import DataSocket, DataId, ConnectParameters
+from model import DataSocket, ConnectParameters
+from domain.common.model import DataId, DataConnectionId
 
 
 class IDataApi:
@@ -20,4 +21,9 @@ class IDataApi:
     @abstractmethod
     def connect_request(self, params):
         # type: (ConnectParameters) -> DataId
+        pass
+
+    @abstractmethod
+    def disconnect_request(self, data_connection_id):
+        # type: (DataConnectionId) -> None
         pass

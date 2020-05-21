@@ -41,3 +41,10 @@ class DataApi(IDataApi):
         """
         json = self.__rest.post("data/connections", params.json(), 202)
         return DataConnectionId(json["params"]["data_connection_id"])
+
+    def disconnect_request(self, data_connection_id):
+        """
+        Disconnect DataConnection
+        :param DataConnectionId data_connection_id:
+        """
+        self.__rest.delete("data/connections/{}".format(data_connection_id.id()), 204)
