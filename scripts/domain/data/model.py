@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from enum import IntEnum
+
 from error import MyException
 from domain.common.model import DataId, DataConnectionId
 
@@ -292,6 +294,61 @@ class RedirectParameters:
             "feed_params": {"data_id": self.__data_id.id()},
             "redirect_params": self.__redirect_params.json(),
         }
+
+
+class DataConnectionEventEnum(IntEnum):
+    OPEN = 0
+    CLOSE = 1
+    ERROR = -1
+
+
+class DataConnectionEvent:
+    def __init__(self, json):
+        """
+        Events from DataConnection
+        :param dict json:
+        """
+        if "event" not in json:
+            raise MyException("invalid datatype of DataConnectionEvent")
+
+        if json["event"] == u"OPEN":
+            self.__type = DataConnectionEventEnum.OPEN
+        elif json["event"] == u"CLOSE":
+            self.__type = DataConnectionEventEnum.CLOSE
+        elif json["event"] == u"ERROR":
+            self.__type = DataConnectionEventEnum.ERROR
+            self.__error_message = json["error_message"]
+        else:
+            raise MyException("Unknown Event Type {}".format(json["event"]))
+
+    def type(self):
+        """
+        Shows event type
+        :return: event type
+        :rtype: DataConnectionEventEnum
+        """
+        return self.__type
+
+    def error_message(self):
+        """
+        error message
+        :return: error messageq
+        :rtype: unicode
+        """
+        return self.__error_message
+
+    def json(self):
+        json = {}
+        if self.__type == DataConnectionEventEnum.OPEN:
+            json["type"] = "OPEN"
+        elif self.__type == DataConnectionEventEnum.CLOSE:
+            json["type"] = "CLOSE"
+        elif self.__type == DataConnectionEventEnum.ERROR:
+            json["type"] = "ERROR"
+            json["error_message"] = self.__error_message
+        else:
+            raise MyException("invalid event data")
+        return json
 
 
 class Status:

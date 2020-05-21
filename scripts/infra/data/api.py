@@ -2,7 +2,13 @@
 import requests
 import simplejson
 
-from domain.data.model import DataSocket, ConnectParameters, RedirectParameters, Status
+from domain.data.model import (
+    DataSocket,
+    ConnectParameters,
+    RedirectParameters,
+    DataConnectionEvent,
+    Status,
+)
 from domain.common.model import DataId, DataConnectionId
 from domain.data.interface import IDataApi
 from infra.rest import Rest
@@ -65,6 +71,18 @@ class DataApi(IDataApi):
             200,
         )
         return DataId(json["data_id"])
+
+    def event(self, data_connection_id):
+        """
+        Get Events of DataConnection
+        :param DataConnectionId data_connection_id: Indicate which DataConnection to get event
+        :return: event
+        :rtype: DataConnectionEvent
+        """
+        json = self.__rest.get(
+            "data/connections/{}/events".format(data_connection_id.id()), 200
+        )
+        return DataConnectionEvent(json)
 
     def status_request(self, data_connection_id):
         """
