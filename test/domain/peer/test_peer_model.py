@@ -21,41 +21,41 @@ class TestModel(unittest.TestCase):
     # ----------CreateRequestParams----------
     def test_create_request_params_success(self):
         json = {
-            "key": u"key",
-            "domain": u"localhost",
-            "peer_id": u"my_id",
+            "key": "key",
+            "domain": "localhost",
+            "peer_id": "my_id",
             "turn": True,
         }
         param = CreateRequestParams(json)
         self.assertEqual(json, param.json())
 
     def test_create_request_params_no_key(self):
-        json = {"domain": u"localhost", "peer_id": u"my_id", "turn": True}
+        json = {"domain": "localhost", "peer_id": "my_id", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
     def test_create_request_params_blank_key(self):
-        json = {"key": u"", "domain": u"localhost", "peer_id": u"my_id", "turn": True}
+        json = {"key": "", "domain": "localhost", "peer_id": "my_id", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
     def test_create_request_params_no_domain(self):
-        json = {"key": u"key", "peer_id": u"my_id", "turn": True}
+        json = {"key": "key", "peer_id": "my_id", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
     def test_create_request_params_blank_domain(self):
-        json = {"key": u"key", "domain": u"", "peer_id": u"my_id", "turn": True}
+        json = {"key": "key", "domain": "", "peer_id": "my_id", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
     def test_create_request_params_no_peer_id(self):
-        json = {"key": u"key", "domain": u"localhost", "turn": True}
+        json = {"key": "key", "domain": "localhost", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 
     def test_create_request_params_blank_peer_id(self):
-        json = {"key": u"key", "domain": u"localhost", "peer_id": u"", "turn": True}
+        json = {"key": "key", "domain": "localhost", "peer_id": "", "turn": True}
         with self.assertRaises(MyException):
             _param = CreateRequestParams(json)
 

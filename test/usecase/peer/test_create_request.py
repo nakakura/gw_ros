@@ -28,9 +28,9 @@ class TestCreateRequest(unittest.TestCase):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         create_request = inject.provide(CreateRequest)
         json = {
-            "key": u"key",
-            "domain": u"localhost",
-            "peer_id": u"my_id",
+            "key": "key",
+            "domain": "localhost",
+            "peer_id": "my_id",
             "turn": True,
         }
         with patch(
@@ -59,9 +59,9 @@ class TestCreateRequest(unittest.TestCase):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
         create_request = inject.provide(CreateRequest)
         json = {
-            "key": u"key",
-            "domain": u"localhost",
-            "peer_id": u"my_id",
+            "key": "key",
+            "domain": "localhost",
+            "peer_id": "my_id",
             "turn": True,
         }
         with patch(

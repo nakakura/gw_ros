@@ -20,19 +20,19 @@ class CreateRequestParams:
         if "key" not in json:
             raise MyException("key: invalid parameter in CreateRequestParams")
         self.__key = json["key"]
-        if not isinstance(self.__key, unicode) or len(self.__key) == 0:
+        if not isinstance(self.__key, str) or len(self.__key) == 0:
             raise MyException("key: invalid parameter in CreateRequestParams")
 
         if "domain" not in json:
             raise MyException("domain: invalid parameter in CreateRequestParams")
         self.__domain = json["domain"]
-        if not isinstance(self.__domain, unicode) or len(self.__domain) == 0:
+        if not isinstance(self.__domain, str) or len(self.__domain) == 0:
             raise MyException("domain: invalid parameter in CreateRequestParams")
 
         if "peer_id" not in json:
             raise MyException("peer_id: invalid parameter in CreateRequestParams")
         self.__peer_id = json["peer_id"]
-        if not isinstance(self.__peer_id, unicode) or len(self.__peer_id) == 0:
+        if not isinstance(self.__peer_id, str) or len(self.__peer_id) == 0:
             raise MyException("peer_id: invalid parameter in CreateRequestParams")
 
         if "turn" not in json:

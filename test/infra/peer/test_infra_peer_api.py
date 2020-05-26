@@ -23,9 +23,9 @@ class TestPeerApi(unittest.TestCase):
     def test_create_request_success(self):
         peer_api = PeerApi("dummy")
         json = {
-            "key": u"key",
-            "domain": u"localhost",
-            "peer_id": u"my_id",
+            "key": "key",
+            "domain": "localhost",
+            "peer_id": "my_id",
             "turn": True,
         }
         params = CreateRequestParams(json)
