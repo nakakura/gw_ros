@@ -1,6 +1,6 @@
 <launch>
     <group ns="skyway">
         <rosparam command="load" file="$(find skyway)/config/config.yaml" />
-        <node pkg="skyway" name="skyway_api" type="main.py" />
+        <node pkg="skyway" name="skyway_api" type="main.py" required="true" />
     </group>
 </launch>
