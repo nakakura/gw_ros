@@ -33,6 +33,10 @@ class PeerInfo:
         # type: () -> unicode
         return self.__token
 
+    def json(self):
+        # type: () -> dict
+        return {u"peer_id": self.__peer_id, u"token": self.__token}
+
     def __eq__(self, other):
         if not isinstance(other, PeerInfo):
             return NotImplemented

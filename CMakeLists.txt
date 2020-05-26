@@ -19,5 +19,6 @@ catkin_package(CATKIN_DEPENDS message_runtime std_msgs)
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(test/mytest.test)
+  add_rostest(test/domain/peer/model/peer_model.test)
 endif()
 

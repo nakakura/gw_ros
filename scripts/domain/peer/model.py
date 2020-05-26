@@ -54,8 +54,6 @@ class CreateRequestParams:
 class PeerEvent:
     def __init__(self, json):
         # type: (dict) -> None
-        if "event" not in json:
-            raise MyException("This json is not an event.")
         self.__event = json["event"]
 
         if self.__event == "OPEN":
