@@ -193,6 +193,15 @@ class DcInit:
 
         return json
 
+    def __eq__(self, other):
+        if not isinstance(other, DcInit):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class ConnectInnerOption:
     def __init__(self, json):
@@ -200,10 +209,9 @@ class ConnectInnerOption:
         Internal Options of ConnectOption
         :param dict json:
         """
-        if "metadata" in json:
-            self.metadata = json["metadata"]
-            if not isinstance(self.metadata, str):
-                raise MyException("invalid parameter of metadata in ConnectInnerOption")
+        self.metadata = json["metadata"]
+        if not isinstance(self.metadata, str):
+            raise MyException("invalid parameter of metadata in ConnectInnerOption")
 
         if "serialization" in json:
             self.serialization = json["serialization"]
@@ -233,6 +241,15 @@ class ConnectInnerOption:
             json["dcInit"] = self.dcInit.json()
 
         return json
+
+    def __eq__(self, other):
+        if not isinstance(other, ConnectInnerOption):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class ConnectParameters:
@@ -271,6 +288,15 @@ class ConnectParameters:
             "options": self.__options.json(),
         }
 
+    def __eq__(self, other):
+        if not isinstance(other, ConnectParameters):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class RedirectParameters:
     def __init__(self, data_id, redirect_params):
@@ -294,6 +320,15 @@ class RedirectParameters:
             "feed_params": {"data_id": self.__data_id.id()},
             "redirect_params": self.__redirect_params.json(),
         }
+
+    def __eq__(self, other):
+        if not isinstance(other, RedirectParameters):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class DataConnectionEventEnum(IntEnum):
@@ -350,6 +385,15 @@ class DataConnectionEvent:
             raise MyException("invalid event data")
         return json
 
+    def __eq__(self, other):
+        if not isinstance(other, DataConnectionEvent):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class Status:
     def __init__(self, json):
@@ -365,3 +409,21 @@ class Status:
         self.reliable = json["reliable"]
         self.serialization = json["serialization"]
         self.type = json["type"]
+
+    def __eq__(self, other):
+        if not isinstance(other, Status):
+            return NotImplemented
+
+        return (
+            self.remote_id == other.remote_id
+            and self.buffersize == other.buffersize
+            and self.label == other.label
+            and self.metadata == other.metadata
+            and self.open == other.open
+            and self.reliable == other.reliable
+            and self.serialization == other.serialization
+            and self.type == other.type
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

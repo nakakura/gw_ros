@@ -1,6 +1,4 @@
 <launch>
-    <test test-name="domain_peer_model" pkg="skyway" type="test_peer_model.py" />
-    <test test-name="domain_data_model" pkg="skyway" type="test_data_model.py" />
     <test test-name="infra_peer_api" pkg="skyway" type="test_infra_peer_api.py" />
     <test test-name="infra_data_api" pkg="skyway" type="test_infra_data_api.py" />
     <test test-name="infra_rest" pkg="skyway" type="test_infra_rest.py" />

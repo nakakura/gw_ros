@@ -21,5 +21,6 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/mytest.test)
   add_rostest(test/domain/common/model/common_model.test)
   add_rostest(test/domain/peer/model/peer_model.test)
+  add_rostest(test/domain/data/model/data_model.test)
 endif()
 
