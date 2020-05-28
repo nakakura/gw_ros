@@ -19,10 +19,6 @@ PKG = "skyway"
 class TestModel(unittest.TestCase):
 
     # ----------PeerInfo----------
-    def test_create_request_info_success(self):
-        peer_info = PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b")
-        self.assertEqual(peer_info.id(), u"my_id")
-        self.assertEqual(peer_info.token(), u"pt-102127d9-30de-413b-93f7-41a33e39d82b")
 
     def test_create_request_info_blank_id(self):
         with self.assertRaises(MyException):

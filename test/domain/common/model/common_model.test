@@ -1,0 +1,4 @@
+<launch>
+  <param name="test_module" value="domain/common/model"/>
+  <test test-name="domain_common_model" pkg="skyway" type="pytest_runner.py" />
+</launch>
