@@ -42,6 +42,7 @@ jobs:
           ln -s ~/work/$DIRNAME/$DIRNAME .
           cd $DIRNAME
           pwd
+          pip install wheel
           pip install -r requirements.txt
       - name: catkin_make run_tests
         run: |
