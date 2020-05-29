@@ -4,7 +4,7 @@ import sys
 import pinject
 from os import path
 from mock import MagicMock
-from concurrent import futures
+import concurrent.futures
 import multiprocessing
 import Queue
 import json as encoder
