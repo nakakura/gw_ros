@@ -118,139 +118,70 @@ class TestDataSocket:
 
 
 class TestDcInit:
+    def setup_method(self, method):
+        self.json = {
+            "ordered": True,
+            "maxPacketLifeTime": 0,
+            "maxRetransmits": 0,
+            "protocol": "H264",
+            "negotiated": True,
+            "id": 0,
+            "priority": "NONE",
+        }
+
+    def teardown_method(self, method):
+        del self.json
+
     @pytest.fixture(
-        params=["different_data_id",]
+        params=[
+            "full",
+            "no_ordered",
+            "no_lifetime",
+            "no_retransmits",
+            "no_protocol",
+            "no_negotiated",
+            "no_id",
+            "no_priority",
+        ]
     )
-    @pytest.mark.parametrize(
-        "json",
-        [
-            # full
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no_ordered
-            {
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no_maxPacketLifeTIme
-            {
-                "ordered": True,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no maxRetransmits
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no protocol
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no negotiated
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "id": 0,
-                "priority": "NONE",
-            },
-            # no id
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "priority": "NONE",
-            },
-            # no priority
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-            },
-        ],
-    )
-    def test_dcinit_json(self, json):
-        dc_init = DcInit(json)
-        assert dc_init.json() == json
+    def optional_json_context(self, request):
+        if request.param == "full":
+            return self.json
+        elif request.param == "no_ordered":
+            del self.json["ordered"]
+            return self.json
+        elif request.param == "no_lifetime":
+            del self.json["maxPacketLifeTime"]
+            return self.json
+        elif request.param == "no_retransmits":
+            del self.json["maxRetransmits"]
+            return self.json
+        elif request.param == "no_protocol":
+            del self.json["protocol"]
+            return self.json
+        elif request.param == "no_negotiated":
+            del self.json["negotiated"]
+            return self.json
+        elif request.param == "no_id":
+            del self.json["id"]
+            return self.json
+        elif request.param == "no_priority":
+            del self.json["priority"]
+            return self.json
+
+    def test_dcinit_json(self, optional_json_context):
+        dc_init = DcInit(optional_json_context)
+        assert dc_init.json() == optional_json_context
 
     def test_dcinit_compare_same(self):
-        dc_init1 = DcInit(
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-        )
-        dc_init2 = DcInit(
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-        )
+        dc_init1 = DcInit(self.json)
+        dc_init2 = DcInit(self.json)
         assert dc_init1 == dc_init2
 
     def test_dcinit_compare_not_same(self):
-        dc_init1 = DcInit(
-            {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-        )
-        dc_init2 = DcInit(
-            {
-                "ordered": False,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            },
-        )
+        dc_init1 = DcInit(self.json)
+        self.json["ordered"] = False
+        dc_init2 = DcInit(self.json)
         assert dc_init1 != dc_init2
 
     @pytest.fixture(
@@ -266,181 +197,72 @@ class TestDcInit:
     )
     def invalid_dcinit_context(self, request):
         if request.param == "ordered_not_bool":
-            return {
-                "ordered": 0,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            }
+            self.json["ordered"] = 0
+            return self.json
         elif request.param == "lifetime_not_num":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": "0",
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            }
+            self.json["maxPacketLifeTime"] = "0"
+            return self.json
         elif request.param == "retransmits_not_num":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": "0",
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            }
+            self.json["maxRetransmits"] = "0"
+            return self.json
         elif request.param == "protocol_not_str":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": 0,
-                "negotiated": True,
-                "id": 0,
-                "priority": "NONE",
-            }
+            self.json["protocol"] = 0
+            return self.json
         elif request.param == "negotiated_not_bool":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": 0,
-                "id": 0,
-                "priority": "NONE",
-            }
+            self.json["negotiated"] = "0"
+            return self.json
         elif request.param == "id_not_num":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": "0",
-                "priority": "NONE",
-            }
-
+            self.json["id"] = "0"
+            return self.json
         elif request.param == "priority_not_str":
-            return {
-                "ordered": True,
-                "maxPacketLifeTime": 0,
-                "maxRetransmits": 0,
-                "protocol": "H264",
-                "negotiated": True,
-                "id": 0,
-                "priority": 0,
-            }
+            self.json["priority"] = 0
+            return self.json
 
     def test_dcinit_create_fail(self, invalid_dcinit_context):
         with pytest.raises(MyException):
             _err = DcInit(invalid_dcinit_context)
 
 
-# FIXME make parameters in before_all
 class TestConnectInnerOption:
+    def setup_method(self, method):
+        self.json = {
+            "metadata": "meta message",
+            "serialization": "BINARY",
+            "dcInit": {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "H264",
+                "negotiated": True,
+                "id": 0,
+                "priority": "NONE",
+            },
+        }
+
+    def teardown_method(self, method):
+        del self.json
+
     def test_connect_inner_option_compare_same(self):
-        inner_option = ConnectInnerOption(
-            {
-                "metadata": "meta message",
-                "serialization": "BINARY",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            },
-        )
-        inner_option2 = ConnectInnerOption(
-            {
-                "metadata": "meta message",
-                "serialization": "BINARY",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            },
-        )
+        inner_option = ConnectInnerOption(self.json)
+        inner_option2 = ConnectInnerOption(self.json)
         assert inner_option == inner_option2
 
     def test_connect_inner_option_compare_not_same(self):
-        inner_option = ConnectInnerOption(
-            {
-                "metadata": "meta message",
-                "serialization": "BINARY",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            },
-        )
-        inner_option2 = ConnectInnerOption(
-            {
-                "metadata": "meta message hogehoge",
-                "serialization": "BINARY",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            },
-        )
+        del self.json["metadata"]
+        inner_option = ConnectInnerOption(self.json)
+        del self.json["serialization"]
+        inner_option2 = ConnectInnerOption(self.json)
         assert inner_option != inner_option2
 
     @pytest.fixture(params=["invalid_metadata", "invalid_serialization"])
     def invalid_option_context(self, request):
         # type (str) -> dict
         if request.param == "invalid_metadata":
-            return {
-                "metadata": "meta message hogehoge",
-                "serialization": 0,
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            }
+            self.json["metadata"] = 0
+            return self.json
         elif request.param == "invalid_serialization":
-            return {
-                "metadata": "meta message hogehoge",
-                "serialization": 0,
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "H264",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "NONE",
-                },
-            }
+            self.json["serialization"] = 0
+            return self.json
 
     def test_connect_inner_option_create_fail(self, invalid_option_context):
         (json) = invalid_option_context
@@ -448,7 +270,6 @@ class TestConnectInnerOption:
             _err = ConnectInnerOption(json)
 
 
-# FIXME make parameters in before_all
 class TestConnectParameters:
     def test_connect_parameters_compare_same(self):
         param = ConnectParameters(
@@ -550,30 +371,72 @@ class TestRedirectParams:
 
 
 class TestStatus:
+    def setup_method(self, method):
+        self.json = {
+            "remote_id": "ID_BAR",
+            "buffersize": 0,
+            "label": "string",
+            "metadata": "metadata",
+            "open": True,
+            "reliable": True,
+            "serialization": "BINARY_UTF8",
+            "type": "DATA",
+        }
+
+    def teardown_method(self, method):
+        del self.json
+
     def test_status_compare(self):
-        param = Status(
-            {
-                "remote_id": "ID_BAR",
-                "buffersize": 0,
-                "label": "string",
-                "metadata": "metadata",
-                "open": True,
-                "reliable": True,
-                "serialization": "BINARY_UTF8",
-                "type": "DATA",
-            }
-        )
-        param2 = Status(
-            {
-                "remote_id": "ID_BAR",
-                "buffersize": 0,
-                "label": "string",
-                "metadata": "metadata",
-                "open": True,
-                "reliable": True,
-                "serialization": "BINARY_UTF8",
-                "type": "DATA",
-            }
-        )
+        param = Status(self.json)
+        param2 = Status(self.json)
 
         assert param == param2
+
+    def test_status_compare_not_same(self):
+        param = Status(self.json)
+        self.json["label"] = u"hoge"
+        param2 = Status(self.json)
+
+        assert param != param2
+
+    @pytest.fixture(
+        params=[
+            "no_remote_id",
+            "no_buffsize",
+            "no_label",
+            "no_metadata",
+            "no_open",
+            "no_reliable",
+            "no_serialization",
+            "no_type",
+        ]
+    )
+    def invalid_status_context(self, request):
+        if request.param == "no_remote_id":
+            del self.json["remote_id"]
+            return self.json
+        elif request.param == "no_buffsize":
+            del self.json["buffersize"]
+            return self.json
+        elif request.param == "no_label":
+            del self.json["label"]
+            return self.json
+        elif request.param == "no_metadata":
+            del self.json["metadata"]
+            return self.json
+        elif request.param == "no_open":
+            del self.json["open"]
+            return self.json
+        elif request.param == "no_reliable":
+            del self.json["reliable"]
+            return self.json
+        elif request.param == "no_serialization":
+            del self.json["serialization"]
+            return self.json
+        elif request.param == "no_type":
+            del self.json["type"]
+            return self.json
+
+    def test_status_create_fail(self, invalid_status_context):
+        with pytest.raises(KeyError):
+            _param = Status(self.json)

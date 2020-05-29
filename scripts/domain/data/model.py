@@ -209,9 +209,10 @@ class ConnectInnerOption:
         Internal Options of ConnectOption
         :param dict json:
         """
-        self.metadata = json["metadata"]
-        if not isinstance(self.metadata, str):
-            raise MyException("invalid parameter of metadata in ConnectInnerOption")
+        if "metadata" in json:
+            self.metadata = json["metadata"]
+            if not isinstance(self.metadata, str):
+                raise MyException("invalid parameter of metadata in ConnectInnerOption")
 
         if "serialization" in json:
             self.serialization = json["serialization"]
