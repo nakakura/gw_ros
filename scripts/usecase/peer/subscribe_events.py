@@ -21,7 +21,7 @@ class SubscribeEvents:
         self.__api = peer_api
 
     # This method subscribes events.
-    def subscribe_events(self, peer_info, event_sink):
+    def run(self, peer_info, event_sink):
         """
         :param PeerInfo peer_info: Indicates which peer object to subscribe events
         :param event_sink: Subscriber of the events

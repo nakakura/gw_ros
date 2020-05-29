@@ -10,7 +10,7 @@ class StatusRequest:
         # type: (IPeerApi) -> None
         self.__api = peer_api
 
-    def status_request(self, peer_info):
+    def run(self, peer_info):
         """
         Request status of Peer Object
         Accessing GET /peers/{peer_id}/status API Internally

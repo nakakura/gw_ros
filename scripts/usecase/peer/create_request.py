@@ -11,7 +11,7 @@ class CreateRequest:
         # type: (IPeerApi) -> None
         self.__api = peer_api
 
-    def create_request(self, json):
+    def run(self, json):
         # type: (dict) -> PeerInfo
         params = CreateRequestParams(json)
         return self.__api.create_request(params)

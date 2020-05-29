@@ -4,7 +4,7 @@ import sys
 import pinject
 from os import path
 from mock import MagicMock
-import concurrent.futures
+from concurrent import futures
 import multiprocessing
 import Queue
 import json as encoder
@@ -104,7 +104,7 @@ class TestStatusRequest:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             executor.submit(
-                self.subscribe_events.subscribe_events, self.peer_info, self.event_sink,
+                self.subscribe_events.run, self.peer_info, self.event_sink,
             )
             assert self.event_sink.get() == encoder.dumps(self.open_event.json())
             assert self.event_sink.get() == encoder.dumps(self.call_event.json())
@@ -125,7 +125,7 @@ class TestStatusRequest:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             executor.submit(
-                self.subscribe_events.subscribe_events, self.peer_info, self.event_sink,
+                self.subscribe_events.run, self.peer_info, self.event_sink,
             )
             assert self.event_sink.get() == encoder.dumps(self.error_event.json())
             with pytest.raises(Queue.Empty):

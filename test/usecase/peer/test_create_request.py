@@ -38,7 +38,7 @@ class TestCreateRequest:
         mocker.patch(
             "infra.peer.api.PeerApi.create_request"
         ).return_value = self.peer_info
-        peer_info = self.create_request.create_request(self.json)
+        peer_info = self.create_request.run(self.json)
         assert peer_info == self.peer_info
 
     def test_create_request_params_error(self, mocker):
@@ -46,4 +46,4 @@ class TestCreateRequest:
             "error"
         )
         with pytest.raises(MyException):
-            _peer_info = self.create_request.create_request(self.json)
+            _peer_info = self.create_request.run(self.json)

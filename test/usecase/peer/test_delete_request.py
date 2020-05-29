@@ -31,7 +31,7 @@ class TestDeleteRequest:
         mocker.patch(
             "infra.peer.api.PeerApi.delete_request"
         ).return_value = self.peer_info
-        peer_info = self.delete_request.delete_request(self.peer_info)
+        peer_info = self.delete_request.run(self.peer_info)
         assert peer_info == self.peer_info
 
     def test_delete_request_params_error(self, mocker):
@@ -39,4 +39,4 @@ class TestDeleteRequest:
             "error"
         )
         with pytest.raises(MyException):
-            _peer_info = self.delete_request.delete_request(self.peer_info)
+            _peer_info = self.delete_request.run(self.peer_info)

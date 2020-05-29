@@ -32,7 +32,7 @@ class TestStatusRequest:
 
     def test_status_request_params_succes(self, mocker):
         mocker.patch("infra.peer.api.PeerApi.status_request").return_value = self.status
-        result = self.status_request.status_request(self.peer_info)
+        result = self.status_request.run(self.peer_info)
         assert result == self.status
 
     def test_status_request_params_error(self, mocker):
@@ -40,4 +40,4 @@ class TestStatusRequest:
             "error"
         )
         with pytest.raises(MyException):
-            _peer_info = self.status_request.status_request(self.peer_info)
+            _peer_info = self.status_request.run(self.peer_info)

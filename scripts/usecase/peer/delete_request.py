@@ -10,7 +10,7 @@ class DeleteRequest:
         # type: (IPeerApi) -> None
         self.__api = peer_api
 
-    def delete_request(self, peer_info):
+    def run(self, peer_info):
         """
         A service that sends a request to remove a Peer Object.
         If you want to check when the peer is actually deleted,
