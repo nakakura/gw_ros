@@ -1,78 +1,49 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
+import pytest
 import sys
-import unittest
-from os import path
-import rospy
 import pinject
-from mock import patch, MagicMock
+from os import path
 
-sys.path.append(
+sys.path.insert(
+    0,
     path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+    + "/scripts",
 )
-sys.path.append(
-    path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
-    + "/scripts"
-)
-from error import MyException
-from domain.peer.model import CreateRequestParams, PeerInfo
-from usecase.peer.create_request import CreateRequest
 from helper.injector import BindingSpec
+from usecase.peer.create_request import CreateRequest
+from domain.peer.model import PeerInfo
+from error import MyException
 
-PKG = "skyway"
 
-
-class TestCreateRequest(unittest.TestCase):
-    def test_create_request_params_success(self):
+class TestCreateRequest:
+    def setup_method(self, method):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
-        create_request = inject.provide(CreateRequest)
-        json = {
+        self.create_request = inject.provide(CreateRequest)
+        self.peer_info = (
+            PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
+        )
+        self.json = {
             "key": "key",
             "domain": "localhost",
             "peer_id": "my_id",
             "turn": True,
         }
-        with patch(
-            "infra.peer.api.PeerApi.create_request",
-            return_value=PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
-        ):
-            peer_info = create_request.create_request(json)
-            self.assertEqual(peer_info.id(), u"my_id")
-            self.assertEqual(
-                peer_info.token(), u"pt-102127d9-30de-413b-93f7-41a33e39d82b"
-            )
 
-    def test_create_request_params_param_error(self):
-        inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
-        create_request = inject.provide(CreateRequest)
-        # no domain
-        json = {"key": u"key", "peer_id": u"my_id", "turn": True}
-        with patch(
-            "infra.peer.api.PeerApi.create_request",
-            return_value=PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
-        ):
-            with self.assertRaises(MyException):
-                _peer_info = create_request.create_request(json)
+    def teardown_method(self, method):
+        del self.create_request
+        del self.peer_info
+        del self.json
 
-    def test_create_request_params_api_error(self):
-        inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
-        create_request = inject.provide(CreateRequest)
-        json = {
-            "key": "key",
-            "domain": "localhost",
-            "peer_id": "my_id",
-            "turn": True,
-        }
-        with patch(
-            "infra.peer.api.PeerApi.create_request", side_effect=MyException("error")
-        ):
-            with self.assertRaises(MyException):
-                _peer_info = create_request.create_request(json)
+    def test_create_request_params_succes(self, mocker):
+        mocker.patch(
+            "infra.peer.api.PeerApi.create_request"
+        ).return_value = self.peer_info
+        peer_info = self.create_request.create_request(self.json)
+        assert peer_info == self.peer_info
 
-
-if __name__ == "__main__":
-    import rostest
-
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-    rostest.rosrun(PKG, "data_api", TestCreateRequest)
+    def test_create_request_params_error(self, mocker):
+        mocker.patch("infra.peer.api.PeerApi.create_request").side_effect = MyException(
+            "error"
+        )
+        with pytest.raises(MyException):
+            _peer_info = self.create_request.create_request(self.json)
