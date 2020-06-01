@@ -1,6 +1,4 @@
 <launch>
-    <test test-name="infra_peer_api" pkg="skyway" type="test_infra_peer_api.py" />
-    <test test-name="infra_data_api" pkg="skyway" type="test_infra_data_api.py" />
     <test test-name="infra_rest" pkg="skyway" type="test_infra_rest.py" />
     <test test-name="service_data_open_data_socket_request" pkg="skyway" type="test_open_socket_request.py" />
     <test test-name="service_data_close_data_socket_request" pkg="skyway" type="test_close_socket_request.py" />

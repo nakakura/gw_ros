@@ -1,62 +1,61 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
 import sys
-import unittest
 from os import path
-from mock import *
 
-sys.path.append(
+sys.path.insert(
+    0,
     path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+    + "/scripts",
 )
-sys.path.append(
-    path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
-    + "/scripts"
-)
+from domain.data.model import DataSocket, ConnectParameters, Socket, RedirectParameters
+from domain.common.model import DataId, PeerInfo, DataConnectionId
 from infra.data.api import DataApi
-from domain.data.model import ConnectParameters, Socket, RedirectParameters
-from domain.common.model import PeerInfo, DataId, DataConnectionId
-
-PKG = "skyway"
 
 
-class TestDataApi(unittest.TestCase):
-    def test_open_data_socket(self):
-        data_api = DataApi("dummy")
-        with patch(
-            "infra.rest.Rest.post",
-            return_value={
-                u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-                u"port": 10001,
-                u"ip_v4": u"127.0.0.1",
-            },
-        ) as mock:
-            value = data_api.open_data_socket_request()
-            data_id = value.data_id()
-            socket = value.socket()
-            self.assertTrue(mock.called)
-            self.assertEqual(mock.call_args[0][0], "data")
-            self.assertEqual(data_id.id(), u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
-            self.assertEqual(socket.port(), 10001)
-            self.assertEqual(socket.ip_v4(), u"127.0.0.1")
-            self.assertEqual(socket.ip_v6(), u"")
+class TestDataApi:
+    def setup_method(self, method):
+        self.data_api = DataApi("dummy")
+        self.data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+        self.data_connection_id = DataConnectionId(
+            u"dc-4995f372-fb6a-4196-b30a-ce11e5c7f56c"
+        )
 
-    def test_close_data_socket(self):
-        data_api = DataApi("dummy")
-        data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
-        with patch("infra.rest.Rest.delete", return_value={},) as mock:
-            data_api.close_data_socket_request(data_id)
-            self.assertTrue(mock.called)
-            self.assertEqual(
-                mock.call_args[0][0], "data/da-50a32bab-b3d9-4913-8e20-f79c90a6a211"
-            )
+    def teardown_method(self, method):
+        del self.data_api
+        del self.data_id
+        del self.data_connection_id
 
-    def test_connect(self):
-        data_api = DataApi("dummy")
+    def test_create_request_success(self, mocker):
+        json = {
+            u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+            u"port": 10001,
+            u"ip_v4": u"127.0.0.1",
+        }
+        mock = mocker.patch("infra.rest.Rest.post")
+        mock.return_value = {
+            u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+            u"port": 10001,
+            u"ip_v4": u"127.0.0.1",
+        }
+        value = self.data_api.open_data_socket_request()
+        assert value == DataSocket(
+            json[u"data_id"], json[u"port"], ip_v4=json[u"ip_v4"]
+        )
+
+    def test_close_data_socket(self, mocker):
+        mock = mocker.patch("infra.rest.Rest.delete")
+        mock.return_value = {}
+        self.data_api.close_data_socket_request(self.data_id)
+        assert mock.called
+        assert mock.call_args_list == [
+            mocker.call("data/da-50a32bab-b3d9-4913-8e20-f79c90a6a211", 204)
+        ]
+
+    def test_connect(self, mocker):
         param = ConnectParameters(
             PeerInfo(u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"),
             "target_id",
-            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
+            self.data_id,
             Socket(10000, ip_v4=u"127.0.0.1"),
             options={
                 "metadata": "string",
@@ -72,75 +71,44 @@ class TestDataApi(unittest.TestCase):
                 },
             },
         )
+        mock = mocker.patch("infra.rest.Rest.post")
+        mock.return_value = {
+            u"command_type": u"PEERS_CONNECT",
+            u"params": {u"data_connection_id": self.data_connection_id.id()},
+        }
+        data_connection_id = self.data_api.connect_request(param)
+        assert mock.called
+        assert mock.call_args_list == [
+            mocker.call("data/connections", param.json(), 202)
+        ]
+        assert data_connection_id == self.data_connection_id
 
-        with patch(
-            "infra.rest.Rest.post",
-            return_value={
-                u"command_type": u"PEERS_CONNECT",
-                u"params": {
-                    u"data_connection_id": u"dc-4995f372-fb6a-4196-b30a-ce11e5c7f56c"
-                },
-            },
-        ) as mock:
-            data_connection_id = data_api.connect_request(param)
-            self.assertTrue(mock.called)
-            self.assertEqual(mock.call_args[0][0], "data/connections")
-            self.assertEqual(mock.call_args[0][1], param.json())
-            self.assertEqual(mock.call_args[0][2], 202)
-            self.assertEqual(
-                data_connection_id.id(), u"dc-4995f372-fb6a-4196-b30a-ce11e5c7f56c"
+    def test_close_data_connection(self, mocker):
+        mock = mocker.patch("infra.rest.Rest.delete")
+        mock.return_value = {}
+        self.data_api.disconnect_request(self.data_connection_id)
+        assert mock.called
+        assert mock.call_args_list == [
+            mocker.call(
+                "data/connections/{}".format(self.data_connection_id.id()), 204,
             )
+        ]
 
-    def test_close_data_connection(self):
-        data_api = DataApi("dummy")
-        data_connection_id = DataConnectionId(
-            u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
-        )
-        with patch("infra.rest.Rest.delete", return_value={},) as mock:
-            data_api.disconnect_request(data_connection_id)
-            self.assertTrue(mock.called)
-            self.assertEqual(
-                mock.call_args[0][0],
-                "data/connections/dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-            )
-            self.assertEqual(mock.call_args[0][1], 204)
-
-    def test_redirect_data_connection(self):
-        data_api = DataApi("dummy")
-        data_connection_id = DataConnectionId(
-            u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
-        )
-        data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+    def test_data_redirect(self, mocker):
         socket = Socket(10000, ip_v4=u"127.0.0.1")
-        redirect_param = RedirectParameters(data_id, socket)
-        with patch(
-            "infra.rest.Rest.put",
-            return_value={
-                "command_type": "DATA_CONNECTION_PUT",
-                "data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-            },
-        ) as mock:
-            ret_id = data_api.redirect_request(data_connection_id, redirect_param)
-            self.assertTrue(mock.called)
-            self.assertEqual(
-                mock.call_args[0][0],
-                "data/connections/dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
+        redirect_param = RedirectParameters(self.data_id, socket)
+        mock = mocker.patch("infra.rest.Rest.put")
+        mock.return_value = {
+            "command_type": "DATA_CONNECTION_PUT",
+            "data_id": self.data_id.id(),
+        }
+        ret_id = self.data_api.redirect_request(self.data_connection_id, redirect_param)
+        assert ret_id == self.data_id
+        assert mock.called
+        assert mock.call_args_list == [
+            mocker.call(
+                "data/connections/{}".format(self.data_connection_id.id()),
+                redirect_param.json(),
+                200,
             )
-            self.assertEqual(
-                mock.call_args[0][1],
-                {
-                    "feed_params": {
-                        "data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-                    },
-                    "redirect_params": {"ip_v4": u"127.0.0.1", "port": 10000,},
-                },
-            )
-            self.assertEqual(mock.call_args[0][2], 200)
-            self.assertEqual(ret_id, data_id)
-
-
-if __name__ == "__main__":
-    import rostest
-
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-    rostest.rosrun(PKG, "test_peer_api", TestDataApi)
+        ]
