@@ -11,6 +11,6 @@ class OpenDataSocketRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def open_data_socket_request(self):
+    def run(self):
         # type: () -> DataSocket
         return self.__api.open_data_socket_request()

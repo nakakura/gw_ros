@@ -26,6 +26,6 @@ class TestCloseSocketRequest:
         mock = mocker.patch("infra.data.api.DataApi.close_data_socket_request")
         mock.return_value = {}
         data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
-        self.request.close_data_socket_request(data_id)
+        self.request.run(data_id)
         assert mock.called
         assert mock.call_args_list == [mocker.call(data_id)]

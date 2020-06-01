@@ -11,6 +11,6 @@ class CloseDataSocketRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def close_data_socket_request(self, data_connection_id):
+    def run(self, data_connection_id):
         # type: (DataConnectionId) -> None
         self.__api.disconnect_request(data_connection_id)

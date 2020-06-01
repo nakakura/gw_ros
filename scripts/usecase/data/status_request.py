@@ -11,7 +11,7 @@ class StatusRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def status_request(self, data_connection_id):
+    def run(self, data_connection_id):
         """
         Shows status of DataConnection
         :param DataConnectionId data_connection_id: Indicates which DataConnection to show

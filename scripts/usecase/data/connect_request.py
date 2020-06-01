@@ -12,7 +12,7 @@ class ConnectRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def connect_request(self, peer_info, target_id, data_id, redirect_params, options):
+    def run(self, peer_info, target_id, data_id, redirect_params, options):
         """
         Establish DataConnection to an other peer
         :param PeerInfo peer_info: Indicate which peer starts connecting

@@ -30,5 +30,5 @@ class TestOpenSocketRequest:
 
         mock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
         mock.return_value = data_sock
-        _data_sock = self.request.open_data_socket_request()
+        _data_sock = self.request.run()
         assert mock.called

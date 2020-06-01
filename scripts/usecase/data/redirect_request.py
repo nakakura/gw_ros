@@ -13,7 +13,7 @@ class ConnectRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def redirect_request(self, data_connection_id, redirect_params):
+    def run(self, data_connection_id, redirect_params):
         """
         Sets the redirect destination for the received data.
         Also, set information to indicate which data to send

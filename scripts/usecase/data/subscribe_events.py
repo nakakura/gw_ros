@@ -15,7 +15,7 @@ class StatusRequest:
         # type: (IDataApi) -> None
         self.__api = data_api
 
-    def subscribe_events(self, data_connection_id, event_sink):
+    def run(self, data_connection_id, event_sink):
         """
         Subscribe events from DataConnection
         :param DataConnectionId data_connection_id: Indicates which DataConection to subscribe events
