@@ -1,4 +1,0 @@
-<launch>
-  <param name="test_module" value="usecase/data/test_close_socket_request.py"/>
-  <test test-name="usecase_delete_data_socket" pkg="skyway" type="pytest_runner.py" />
-</launch>
