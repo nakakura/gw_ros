@@ -1,42 +1,31 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
+import pytest
 import sys
-import unittest
-from os import path
-import rospy
 import pinject
-from mock import patch, MagicMock
+from os import path
 
-sys.path.append(
+sys.path.insert(
+    0,
     path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+    + "/scripts",
 )
-sys.path.append(
-    path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
-    + "/scripts"
-)
-from error import MyException
-from usecase.data.close_data_socket_request import CloseDataSocketRequest
-from domain.data.model import DataSocket, DataId
 from helper.injector import BindingSpec
+from usecase.data.close_data_socket_request import CloseDataSocketRequest
+from domain.common.model import DataId
 
-PKG = "skyway"
 
-
-class TestCloseRequest(unittest.TestCase):
-    def test_close_request_params_success(self):
+class TestCloseSocketRequest:
+    def setup_method(self, method):
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
-        close_data_request = inject.provide(CloseDataSocketRequest)
+        self.request = inject.provide(CloseDataSocketRequest)
+
+    def teardown_method(self, method):
+        del self.request
+
+    def test_close_socket_request(self, mocker):
+        mock = mocker.patch("infra.data.api.DataApi.close_data_socket_request")
+        mock.return_value = {}
         data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
-        with patch(
-            "infra.data.api.DataApi.close_data_socket_request", return_value={}
-        ) as mock:
-            close_data_request.close_data_socket_request(data_id)
-            self.assertTrue(mock.called)
-
-
-if __name__ == "__main__":
-    import rostest
-
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-    rostest.rosrun(PKG, "data_api", TestCloseRequest)
+        self.request.close_data_socket_request(data_id)
+        assert mock.called
+        assert mock.call_args_list == [mocker.call(data_id)]
