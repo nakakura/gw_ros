@@ -57,13 +57,15 @@ def main():
     peer_info = create_request.run(peer_config)
 
     rospy.loginfo("start process")
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         # check if ROS is running
         executor.submit(on_exit, peer_info)
-        # launch event notifier for end user program
-        executor.submit(subscribe_event_request.run, peer_info, event_queue)
         # launch event listener from the PeerObject in WebRTC GW
+        executor.submit(subscribe_event_request.run, peer_info, event_queue)
+        # launch event notifier for end user program
         executor.submit(skyway_events_server, event_queue)
+        # launch message listener from end user program
+        executor.submit(control_message_server, multiprocessing.Queue())
 
     executor.shutdown()
 

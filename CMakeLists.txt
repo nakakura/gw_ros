@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
 add_service_files(
   FILES
   SkyWayEvents.srv
+  SkyWayControls.srv
 )
 
 # Actually generate the language-specific message and usecase files
