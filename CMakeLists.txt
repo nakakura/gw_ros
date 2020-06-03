@@ -22,6 +22,7 @@ catkin_package(CATKIN_DEPENDS message_runtime std_msgs)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
+  add_rostest(test/helper/runner.test)
   add_rostest(test/infra/peer/runner.test)
   add_rostest(test/infra/data/runner.test)
   add_rostest(test/domain/common/model/runner.test)
