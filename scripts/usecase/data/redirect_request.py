@@ -6,8 +6,7 @@ from domain.data.model import RedirectParameters
 from domain.common.model import DataConnectionId
 
 
-# FIXME
-class ConnectRequest:
+class RedirectRequest:
     @pinject.annotate_arg("data_api", "DataApi")
     def __init__(self, data_api):
         # type: (IDataApi) -> None

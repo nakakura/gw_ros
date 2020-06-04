@@ -5,7 +5,7 @@ from domain.data.interface import IDataApi
 from domain.common.model import DataConnectionId
 
 
-class CloseDataSocketRequest:
+class DisconnectRequest:
     @pinject.annotate_arg("data_api", "DataApi")
     def __init__(self, data_api):
         # type: (IDataApi) -> None
