@@ -95,12 +95,12 @@ class PeerEvent:
         return self.__peer_info
 
     def media_connection_id(self):
-        # type: () -> unicode
-        return self.__media_connection_id.id()
+        # type: () -> MediaConnectionId
+        return self.__media_connection_id
 
     def data_connection_id(self):
-        # type: () -> unicode
-        return self.__data_connection_id.id()
+        # type: () -> DataConnectionId
+        return self.__data_connection_id
 
     def error_message(self):
         # type: () -> unicode
@@ -113,9 +113,9 @@ class PeerEvent:
         params["peer_id"] = self.peer_info().id()
         params["token"] = self.peer_info().token()
         if self.__event == "CALL":
-            params["media_connection_id"] = self.media_connection_id()
+            params["media_connection_id"] = self.media_connection_id().id()
         elif self.__event == "CONNECTION":
-            params["data_connection_id"] = self.data_connection_id()
+            params["data_connection_id"] = self.data_connection_id().id()
         elif self.__event == "ERROR":
             params["error"] = self.error_message()
 

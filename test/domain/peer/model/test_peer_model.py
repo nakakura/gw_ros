@@ -162,7 +162,7 @@ class TestPeerEvent:
         peer_event = PeerEvent(self.connect_json)
         assert peer_event.peer_info() == self.peer_info, "invalid peer_info"
         assert (
-            peer_event.data_connection_id() == self.data_connection_id
+            peer_event.data_connection_id().id() == self.data_connection_id
         ), "invalid data_connection_id"
         with pytest.raises(AttributeError):
             peer_event.media_connection_id()
@@ -173,7 +173,7 @@ class TestPeerEvent:
         peer_event = PeerEvent(self.call_json)
         assert peer_event.peer_info() == self.peer_info, "invalid peer_info"
         assert (
-            peer_event.media_connection_id() == self.media_connection_id
+            peer_event.media_connection_id().id() == self.media_connection_id
         ), "invalid media_connection_id"
         with pytest.raises(AttributeError):
             peer_event.data_connection_id()

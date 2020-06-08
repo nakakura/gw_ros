@@ -17,5 +17,5 @@ class MultiQueue:
 
             try:
                 yield self.__queue2.get(timeout=0.1)
-            except Queue.Empty as e:
-                raise e
+            except Queue.Empty:
+                pass
