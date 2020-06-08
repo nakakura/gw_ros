@@ -38,7 +38,7 @@ class TestRedirectFlow:
             {"name": "data", "redirect_params": {"ip_v4": "127.0.0.1", "port": 10000}},
             {"name": "data2", "redirect_params": {"ip_v6": "fe00::1", "port": 10001}},
         ]
-        self.redirect_flow = RedirectFlow(self.config, self.data_connection_id)
+        self.redirect_flow = RedirectFlow()
 
     def teardown_method(self, method):
         del self.data_connection_id
@@ -74,7 +74,7 @@ class TestRedirectFlow:
             u"command_type": u"DATA_CONNECTION_PUT",
             u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
         }
-        assert self.redirect_flow.run() == (
+        assert self.redirect_flow.run(self.config, self.data_connection_id) == (
             self.data_connection_id,
             {"name": "data", "redirect_params": {"ip_v4": "127.0.0.1", "port": 10000}},
             [
@@ -116,6 +116,10 @@ class TestRedirectFlow:
             u"command_type": u"DATA_CONNECTION_PUT",
             u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
         }
-        assert self.redirect_flow.run() == (self.data_connection_id, {}, self.config)
+        assert self.redirect_flow.run(self.config, self.data_connection_id) == (
+            self.data_connection_id,
+            {},
+            self.config,
+        )
         assert mock_disconnect.called
         assert mock_disconnect.call_args_list == [mocker.call(self.data_connection_id)]

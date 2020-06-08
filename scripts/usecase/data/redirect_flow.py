@@ -13,18 +13,14 @@ from usecase.data.open_data_socket_request import OpenDataSocketRequest
 
 
 class RedirectFlow:
-    def __init__(self, config, data_connection_id):
+    def __init__(self):
+        pass
+
+    def run(self, original_config, data_connection_id):
         """
         redirects an DataConnection according to config
-        :param list config:
+        :param list original_config:
         :param DataConnectionId data_connection_id:
-        """
-        self.__config = config
-        self.__data_connection_id = data_connection_id
-
-    def run(self):
-        """
-
         :return: result of redirect flow
         :rtype: (DataConnectionId, dict, array)
         """
@@ -32,16 +28,16 @@ class RedirectFlow:
 
         # check metadata
         status_request = inject.provide(StatusRequest)
-        status = status_request.run(self.__data_connection_id)
+        status = status_request.run(data_connection_id)
         status = Status(status)
 
         # load config
-        (item, config) = extract_target_item(status.metadata, self.__config)
+        (item, config) = extract_target_item(status.metadata, original_config)
         if item == {}:
             disconnect_request = inject.provide(DisconnectRequest)
-            disconnect_request.run(self.__data_connection_id)
+            disconnect_request.run(data_connection_id)
             # if not have config -> reject(close socket, disconnect)
-            return self.__data_connection_id, {}, self.__config
+            return data_connection_id, {}, original_config
 
         # if have config
         # open data sock
@@ -62,6 +58,6 @@ class RedirectFlow:
 
         params = RedirectParameters(data_id, socket)
         redirect_request = inject.provide(RedirectRequest)
-        _data_id = redirect_request.run(self.__data_connection_id, params)
+        _data_id = redirect_request.run(data_connection_id, params)
         # show the message to user
-        return self.__data_connection_id, item, config
+        return data_connection_id, item, config
