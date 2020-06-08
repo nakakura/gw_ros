@@ -22,7 +22,7 @@ class RedirectFlow:
         :param list original_config:
         :param DataConnectionId data_connection_id:
         :return: result of redirect flow
-        :rtype: (DataConnectionId, dict, array)
+        :rtype: dict
         """
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
 
@@ -37,7 +37,7 @@ class RedirectFlow:
             disconnect_request = inject.provide(DisconnectRequest)
             disconnect_request.run(data_connection_id)
             # if not have config -> reject(close socket, disconnect)
-            return data_connection_id, {}, original_config
+            return {"flag": False, "item": {}, "config": original_config}
 
         # if have config
         # open data sock
@@ -58,6 +58,11 @@ class RedirectFlow:
 
         params = RedirectParameters(data_id, socket)
         redirect_request = inject.provide(RedirectRequest)
-        _data_id = redirect_request.run(data_connection_id, params)
+        data_id = redirect_request.run(data_connection_id, params)
         # show the message to user
-        return data_connection_id, item, config
+        return {
+            "flag": True,
+            "data_id": data_id,
+            "item": item,
+            "config": original_config,
+        }
