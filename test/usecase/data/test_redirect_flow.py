@@ -74,6 +74,7 @@ class TestRedirectFlow:
         assert self.redirect_flow.run(self.config, self.data_connection_id) == {
             "flag": True,
             "data_id": DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"),
+            "status": self.status,
             "item": {
                 "name": "data",
                 "redirect_params": {"ip_v4": "127.0.0.1", "port": 10000},

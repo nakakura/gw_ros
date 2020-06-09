@@ -63,6 +63,7 @@ class RedirectFlow:
         return {
             "flag": True,
             "data_id": data_id,
+            "status": status,
             "item": item,
             "config": original_config,
         }
