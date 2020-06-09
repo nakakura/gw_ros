@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from multiprocessing import Queue
+from enum import Enum
 
 from helper.multi_queue import MultiQueue
-from domain.common.model import DataConnectionId
 from domain.data.model import DataControlEventType
 from usecase.data.redirect_flow import RedirectFlow
+from usecase.common import ResultType
+
+
+class DataResultType(Enum):
+    CONNECTION = u"CONNECTION"
 
 
 class Router:
@@ -28,13 +33,14 @@ class Router:
                 if params["flag"]:
                     self.__used_config.append(params["item"])
                     self.__config = params["config"]
+                    result = {
+                        u"type": DataResultType.CONNECTION.value,
+                        u"data_connection_id": data_connection_id.id(),
+                        u"socket": params["item"],
+                        u"status": params["status"].json(),
+                    }
                     self.__event_sink.put(
-                        {
-                            "type": DataControlEventType.CONNECTION,
-                            "value": params["item"],
-                            "data_connection_id": data_connection_id.id(),
-                            "data_id": params["data_id"].id(),
-                        }
+                        {u"type": ResultType.DATA.value, u"data_params": result}
                     )
                 else:
                     continue
