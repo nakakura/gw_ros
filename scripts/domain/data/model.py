@@ -402,14 +402,50 @@ class Status:
         Shows status of DataConnection
         :param dict json:
         """
+
         self.remote_id = json["remote_id"]
+        if not isinstance(self.remote_id, unicode):
+            raise MyException("invalid parameter of remote_id in Status")
+
         self.buffersize = json["buffersize"]
+        if not isinstance(self.buffersize, int):
+            raise MyException("invalid parameter of buffersize in Status")
+
         self.label = json["label"]
+        if not isinstance(self.label, unicode):
+            raise MyException("invalid parameter of label in Status")
+
         self.metadata = json["metadata"]
+        if not isinstance(self.metadata, unicode):
+            raise MyException("invalid parameter of metadata in Status")
+
         self.open = json["open"]
+        if not isinstance(self.open, bool):
+            raise MyException("invalid parameter of open in Status")
+
         self.reliable = json["reliable"]
+        if not isinstance(self.reliable, bool):
+            raise MyException("invalid parameter of reliable in Status")
+
         self.serialization = json["serialization"]
+        if not isinstance(self.serialization, unicode):
+            raise MyException("invalid parameter of serialization in Status")
+
         self.type = json["type"]
+        if not isinstance(self.type, unicode):
+            raise MyException("invalid parameter of type in Status")
+
+    def json(self):
+        return {
+            u"remote_id": self.remote_id,
+            u"buffersize": self.buffersize,
+            u"label": self.label,
+            u"metadata": self.metadata,
+            u"open": self.open,
+            u"reliable": self.reliable,
+            u"serialization": self.serialization,
+            u"type": self.type,
+        }
 
     def __eq__(self, other):
         if not isinstance(other, Status):

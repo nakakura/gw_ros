@@ -375,18 +375,22 @@ class TestRedirectParams:
 class TestStatus:
     def setup_method(self, method):
         self.json = {
-            "remote_id": "ID_BAR",
-            "buffersize": 0,
-            "label": "string",
-            "metadata": "metadata",
-            "open": True,
-            "reliable": True,
-            "serialization": "BINARY_UTF8",
-            "type": "DATA",
+            u"remote_id": u"ID_BAR",
+            u"buffersize": 0,
+            u"label": u"string",
+            u"metadata": u"metadata",
+            u"open": True,
+            u"reliable": True,
+            u"serialization": u"BINARY_UTF8",
+            u"type": u"DATA",
         }
 
     def teardown_method(self, method):
         del self.json
+
+    def test_json(self):
+        param = Status(self.json)
+        assert param.json() == self.json
 
     def test_status_compare(self):
         param = Status(self.json)
