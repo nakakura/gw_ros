@@ -21,10 +21,10 @@ class SubscribeEvents:
         self.__api = peer_api
 
     # This method subscribes events.
-    def run(self, peer_info, event_sink):
+    def run(self, peer_info, event_sink_list):
         """
         :param PeerInfo peer_info: Indicates which peer object to subscribe events
-        :param event_sink: Subscriber of the events
+        :param list event_sink_list: a list of Subscribers of the events
         :return: None
         :rtype: None
         """
@@ -32,7 +32,8 @@ class SubscribeEvents:
         while not rospy.is_shutdown():
             try:
                 event = self.__api.listen_event(peer_info)
-                event_sink.put(encoder.dumps(event.json()))
+                for sink in event_sink_list:
+                    sink.put(encoder.dumps(event.json()))
             except MyException as e:
                 message = e.message()
                 if message["status"] == 408:

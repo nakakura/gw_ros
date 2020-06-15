@@ -52,7 +52,10 @@ def main():
 
     # this queue is for message passing between PeerEventListener
     #   and Event Notifier in presentation layer.
-    event_queue = multiprocessing.Queue()
+    queue_from_peer_event_to_presentation = multiprocessing.Queue()
+    # this queue is for message passing between PeerEventListener
+    #   and the Router in service
+    queue_from_peer_event_to_services = multiprocessing.Queue()
 
     # create a PeerObject
     peer_info = create_request.run(peer_config)
@@ -65,13 +68,17 @@ def main():
 
         # ----------service----------
         # launch event listener from the PeerObject in WebRTC GW
-        executor.submit(peer_event_subscribe_service.run, peer_info, event_queue)
+        executor.submit(
+            peer_event_subscribe_service.run,
+            peer_info,
+            [queue_from_peer_event_to_presentation, queue_from_peer_event_to_services],
+        )
 
         # ----------service----------
 
         # ----------presentation----------
         # launch event notifier for end user program
-        executor.submit(skyway_events_server, event_queue)
+        executor.submit(skyway_events_server, queue_from_peer_event_to_presentation)
         # launch message listener from end user program
         executor.submit(control_message_server, multiprocessing.Queue())
         # ----------presentation----------
