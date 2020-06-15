@@ -29,7 +29,6 @@ class RedirectFlow:
         # check metadata
         status_request = inject.provide(StatusRequest)
         status = status_request.run(data_connection_id)
-        status = Status(status)
 
         # load config
         (item, config) = extract_target_item(status.metadata, original_config)
@@ -42,7 +41,7 @@ class RedirectFlow:
         # if have config
         # open data sock
         open_socket_request = inject.provide(OpenDataSocketRequest)
-        data_id = open_socket_request.run()
+        data_socket = open_socket_request.run()
 
         # redirect
         socket = {}
@@ -56,13 +55,16 @@ class RedirectFlow:
                 redirect_params["port"], ip_v6=redirect_params["ip_v6"].decode()
             )
 
-        params = RedirectParameters(data_id, socket)
+        params = RedirectParameters(data_socket.data_id(), socket)
+        print params
         redirect_request = inject.provide(RedirectRequest)
+        print "request"
         data_id = redirect_request.run(data_connection_id, params)
+        print "before return"
         # show the message to user
         return {
             "flag": True,
-            "data_id": data_id,
+            "data_socket": data_socket,
             "status": status,
             "item": item,
             "config": original_config,

@@ -33,7 +33,7 @@ class SubscribeEvents:
             try:
                 event = self.__api.listen_event(peer_info)
                 for sink in event_sink_list:
-                    sink.put(encoder.dumps(event.json()))
+                    sink.put(event)
             except MyException as e:
                 message = e.message()
                 if message["status"] == 408:

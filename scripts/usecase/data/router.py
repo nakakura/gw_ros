@@ -3,7 +3,7 @@ from multiprocessing import Queue
 from enum import Enum
 
 from helper.multi_queue import MultiQueue
-from domain.data.model import DataControlEventType
+from domain.data.model import DataEventItem
 from usecase.data.redirect_flow import RedirectFlow
 from usecase.common import ResultType
 
@@ -26,23 +26,30 @@ class Router:
 
     def run(self):
         for event in self.__queue.generate():
-            if event.type() == DataControlEventType.CONNECTION:
+            print event.json()
+            print event.type()
+            if event.type() == u"CONNECTION":
+                print "connection"
                 redirect_flow = RedirectFlow()
+                print "connection2"
                 data_connection_id = event.data_connection_id()
+                print "connection3"
                 params = redirect_flow.run(self.__config, data_connection_id)
+                print params
                 if params["flag"]:
                     self.__used_config.append(params["item"])
                     self.__config = params["config"]
                     result = {
                         u"type": DataResultType.CONNECTION.value,
-                        u"data_connection_id": data_connection_id.id(),
+                        u"data_socket": params["data_socket"].json(),
                         u"socket": params["item"],
                         u"status": params["status"].json(),
                     }
-                    self.__event_sink.put(
-                        {u"type": ResultType.DATA.value, u"data_params": result}
-                    )
+                    print "event sink put"
+                    self.__event_sink.put(DataEventItem(ResultType.DATA.value, result))
                 else:
                     continue
-            elif event.type() == DataControlEventType.PEER_CLOSE:
+            elif event.type() == u"CLOSE":
                 return
+            elif event.type() == u"OPEN":
+                continue

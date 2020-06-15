@@ -112,6 +112,9 @@ class DataSocket:
         """
         return self.__data_id
 
+    def json(self):
+        return {u"data_id": self.__data_id.id(), u"socket": self.__socket.json()}
+
     def __eq__(self, other):
         if not isinstance(other, DataSocket):
             return NotImplemented
@@ -317,6 +320,10 @@ class RedirectParameters:
         :rtype: dict
         """
 
+        print "hoge"
+        print self.__data_id
+        print self.__data_id.id()
+        print self.__redirect_params.json()
         return {
             "feed_params": {"data_id": self.__data_id.id()},
             "redirect_params": self.__redirect_params.json(),
@@ -510,3 +517,13 @@ class DataControlEvents:
         :rtype: DataConnectionId
         """
         return self.__data_connection_id
+
+
+# FIXME: No Test
+class DataEventItem:
+    def __init__(self, type, json):
+        self.__type = type
+        self.__json = json
+
+    def json(self):
+        return self.__json

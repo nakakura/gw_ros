@@ -22,7 +22,7 @@ class TestMultiQueue:
         del self.queue1
         del self.queue2
 
-    def test_multi_queue(self, mocker):
+    def test_generate(self, mocker):
         self.queue2.put("data2")
         self.queue2.put("data4")
         self.queue1.put("data1")
@@ -32,3 +32,15 @@ class TestMultiQueue:
         assert generator.next() == "data2"
         assert generator.next() == "data3"
         assert generator.next() == "data4"
+
+    def test_get(self):
+        self.queue2.put("data2")
+        self.queue2.put("data4")
+        self.queue1.put("data1")
+        self.queue1.put("data3")
+        assert self.multi_queue.get(0.1) == "data1"
+        assert self.multi_queue.get(0.1) == "data3"
+        assert self.multi_queue.get(0.1) == "data2"
+        assert self.multi_queue.get(0.1) == "data4"
+        with pytest.raises(Queue.Empty):
+            self.multi_queue.get(0.1)
