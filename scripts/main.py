@@ -13,7 +13,7 @@ from usecase.peer.create_request import CreateRequest
 from usecase.peer.delete_request import DeleteRequest
 from usecase.peer.subscribe_events import SubscribeEvents
 from presentation.ros_pub_sub import ros_subscriber, ros_publisher
-from presentation.service import *
+from presentation.service import skyway_events_server, control_message_server
 from domain.common.model import PeerInfo
 
 PKG = "skyway"
@@ -40,6 +40,7 @@ def main():
 
     # load config
     peer_config = rospy.get_param("/skyway/peer")
+    data_config = rospy.get_param("/skyway/data")
     # API_KEY needs to be kept confidential,
     # so it's loaded from environment variables
     peer_config["key"] = os.environ["API_KEY"]
@@ -47,7 +48,7 @@ def main():
     # create services for Peer
     inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
     create_request = inject.provide(CreateRequest)
-    subscribe_event_request = inject.provide(SubscribeEvents)
+    peer_event_subscribe_service = inject.provide(SubscribeEvents)
 
     # this queue is for message passing between PeerEventListener
     #   and Event Notifier in presentation layer.
@@ -59,13 +60,21 @@ def main():
     rospy.loginfo("start process")
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         # check if ROS is running
+        # When ROS is closing, this method will delete the PeerObject
         executor.submit(on_exit, peer_info)
+
+        # ----------service----------
         # launch event listener from the PeerObject in WebRTC GW
-        executor.submit(subscribe_event_request.run, peer_info, event_queue)
+        executor.submit(peer_event_subscribe_service.run, peer_info, event_queue)
+
+        # ----------service----------
+
+        # ----------presentation----------
         # launch event notifier for end user program
         executor.submit(skyway_events_server, event_queue)
         # launch message listener from end user program
         executor.submit(control_message_server, multiprocessing.Queue())
+        # ----------presentation----------
 
     executor.shutdown()
 
