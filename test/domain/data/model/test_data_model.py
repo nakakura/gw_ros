@@ -18,8 +18,6 @@ from domain.data.model import (
     ConnectParameters,
     RedirectParameters,
     Status,
-    DataControlEvents,
-    DataControlEventType,
 )
 from domain.common.model import PeerInfo, DataId, DataConnectionId
 from error import MyException
@@ -446,39 +444,3 @@ class TestStatus:
     def test_status_create_fail(self, invalid_status_context):
         with pytest.raises(KeyError):
             _param = Status(self.json)
-
-
-class TestDataControlEvents:
-    def setup_method(self):
-        self.peer_info = PeerInfo(
-            u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"
-        )
-        self.data_connection_id = DataConnectionId(
-            u"dc-102127d9-30de-413b-93f7-41a33e39d82b"
-        )
-
-    def teardown_method(self):
-        del self.peer_info
-        del self.data_connection_id
-
-    def test_peer_close(self):
-        event = DataControlEvents(
-            DataControlEventType.PEER_CLOSE,
-            {u"peer_id": self.peer_info.id(), u"token": self.peer_info.token()},
-        )
-
-        assert event.type() == DataControlEventType.PEER_CLOSE
-        assert event.peer_info() == self.peer_info
-        with pytest.raises(AttributeError):
-            event.data_connection_id()
-
-    def test_connection(self):
-        event = DataControlEvents(
-            DataControlEventType.CONNECTION,
-            {u"data_connection_id": self.data_connection_id.id()},
-        )
-
-        assert event.type() == DataControlEventType.CONNECTION
-        assert event.data_connection_id() == self.data_connection_id
-        with pytest.raises(AttributeError):
-            event.peer_info()

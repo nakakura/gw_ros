@@ -473,52 +473,6 @@ class Status:
         return not self.__eq__(other)
 
 
-class DataControlEventType(IntEnum):
-    PEER_CLOSE = 1
-    CONNECTION = 2
-    CONNECT_TO = 3
-    DISCONNECT = 4
-
-
-# FIXME CONNECT_TO and DISCONNECT are not implemented
-class DataControlEvents:
-    def __init__(self, type, json):
-        """
-        Indicates what kind of message was received by WebRTC GW
-        :param DataControlEventType type: type of this event
-        :param dict json: data of this event
-        """
-        self.__type = type
-        if self.__type == DataControlEventType.PEER_CLOSE:
-            self.__peer_info = PeerInfo(json["peer_id"], json["token"])
-        elif self.__type == DataControlEventType.CONNECTION:
-            self.__data_connection_id = DataConnectionId(json["data_connection_id"])
-
-    def type(self):
-        """
-        getter
-        :return: type
-        :rtype: DataControlEventType
-        """
-        return self.__type
-
-    def peer_info(self):
-        """
-        getter
-        :return: peer_info
-        :rtype: PeerInfo
-        """
-        return self.__peer_info
-
-    def data_connection_id(self):
-        """
-        getter
-        :return: data_connection_id
-        :rtype: DataConnectionId
-        """
-        return self.__data_connection_id
-
-
 # FIXME: No Test
 class DataEventItem:
     def __init__(self, type, json):

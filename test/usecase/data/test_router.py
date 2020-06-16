@@ -14,8 +14,6 @@ sys.path.insert(
 from helper.multi_queue import MultiQueue
 from usecase.data.router import Router
 from domain.data.model import (
-    DataControlEvents,
-    DataControlEventType,
     Status,
     DataSocket,
     DataEventItem,
