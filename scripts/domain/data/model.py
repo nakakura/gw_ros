@@ -527,3 +527,12 @@ class DataEventItem:
 
     def json(self):
         return self.__json
+
+    def __eq__(self, other):
+        if not isinstance(other, DataEventItem):
+            return NotImplemented
+
+        return self.json() == other.json()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

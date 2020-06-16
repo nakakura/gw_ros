@@ -13,12 +13,20 @@ sys.path.insert(
 )
 from helper.multi_queue import MultiQueue
 from usecase.data.router import Router
-from domain.data.model import DataControlEvents, DataControlEventType, Status
-from domain.common.model import DataId, DataConnectionId
+from domain.data.model import (
+    DataControlEvents,
+    DataControlEventType,
+    Status,
+    DataSocket,
+    DataEventItem,
+)
+from domain.common.model import DataId, DataConnectionId, PeerInfo
+from domain.peer.model import PeerEvent
 
 
 class TestRouter:
     def setup_method(self, method):
+        self.peer_info = PeerInfo(u"hoge", u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af")
         self.peer_event_queue = multiprocessing.Queue()
         self.ros_event_queue = multiprocessing.Queue()
         self.event_sink = multiprocessing.Queue()
@@ -41,16 +49,16 @@ class TestRouter:
             MultiQueue(self.ros_event_queue, self.peer_event_queue),
             self.event_sink,
         )
-        self.connection_event = DataControlEvents(
-            DataControlEventType.CONNECTION,
-            {u"data_connection_id": self.data_connection_id.id()},
-        )
-        self.close_event = DataControlEvents(
-            DataControlEventType.PEER_CLOSE,
+        self.connection_event = PeerEvent(
             {
-                u"peer_id": u"hoge",
-                u"token": u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af",
-            },
+                "event": "CONNECTION",
+                "params": self.peer_info.json(),
+                "data_params": {"data_connection_id": self.data_connection_id.id()},
+            }
+        )
+
+        self.close_event = PeerEvent(
+            {"event": "CLOSE", "params": self.peer_info.json()}
         )
         self.status = Status(
             {
@@ -64,31 +72,24 @@ class TestRouter:
                 u"type": u"DATA",
             }
         )
-        self.result = {
-            u"type": u"DATA",
-            u"data_params": {
-                u"type": u"CONNECTION",
-                u"data_connection_id": u"dc-102127d9-30de-413b-93f7-41a33e39d82b",
-                u"socket": {
-                    u"name": u"data",
-                    u"redirect_params": {u"ip_v4": u"127.0.0.1", u"port": 10000},
-                },
-                u"status": {
-                    u"remote_id": u"peer_id",
-                    u"buffersize": 0,
-                    u"label": u"",
-                    u"metadata": u"data",
-                    u"open": True,
-                    u"reliable": True,
-                    u"serialization": u"BINARY_UTF8",
-                    u"type": u"DATA",
-                },
+        result = {
+            u"type": u"CONNECTION",
+            u"data_socket": DataSocket(
+                u"da-102127d9-30de-413b-93f7-41a33e39d82b", 10000, ip_v4=u"127.0.0.1"
+            ).json(),
+            u"socket": {
+                u"name": u"data",
+                u"redirect_params": {u"ip_v4": u"127.0.0.1", u"port": 10000},
             },
+            u"status": self.status.json(),
         }
+        self.result = DataEventItem(u"CONNECTION", result)
         self.item = self.config.pop(0)
         self.return_value = {
             u"flag": True,
-            u"data_id": DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"),
+            u"data_socket": DataSocket(
+                u"da-102127d9-30de-413b-93f7-41a33e39d82b", 10000, ip_v4=u"127.0.0.1",
+            ),
             u"status": self.status,
             u"item": self.item,
             u"config": self.config,
@@ -106,6 +107,7 @@ class TestRouter:
         del self.connection_event
         del self.close_event
         del self.result
+        del self.peer_info
 
     def test_connection_event(self, mocker):
         mock = mocker.patch("usecase.data.redirect_flow.RedirectFlow.run")

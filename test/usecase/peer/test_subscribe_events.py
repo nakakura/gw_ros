@@ -106,10 +106,10 @@ class TestStatusRequest:
             executor.submit(
                 self.subscribe_events.run, self.peer_info, [self.event_sink],
             )
-            assert self.event_sink.get() == encoder.dumps(self.open_event.json())
-            assert self.event_sink.get() == encoder.dumps(self.call_event.json())
-            assert self.event_sink.get() == encoder.dumps(self.connection_event.json())
-            assert self.event_sink.get() == encoder.dumps(self.close_event.json())
+            assert self.event_sink.get() == self.open_event
+            assert self.event_sink.get() == self.call_event
+            assert self.event_sink.get() == self.connection_event
+            assert self.event_sink.get() == self.close_event
             with pytest.raises(Queue.Empty):
                 self.event_sink.get(timeout=0.1)
 
@@ -127,7 +127,7 @@ class TestStatusRequest:
             executor.submit(
                 self.subscribe_events.run, self.peer_info, [self.event_sink],
             )
-            assert self.event_sink.get() == encoder.dumps(self.error_event.json())
+            assert self.event_sink.get() == self.error_event
             with pytest.raises(Queue.Empty):
                 self.event_sink.get(timeout=0.1)
 

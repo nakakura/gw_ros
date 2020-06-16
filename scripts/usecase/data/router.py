@@ -29,14 +29,25 @@ class Router:
             print event.json()
             print event.type()
             if event.type() == u"CONNECTION":
-                print "connection"
                 redirect_flow = RedirectFlow()
-                print "connection2"
                 data_connection_id = event.data_connection_id()
-                print "connection3"
+                """
+                returns JSON Value
+                When Success
+                param = {
+                    "flag": True,
+                    "data_socket": DataSocket,
+                    "status": Status,
+                    "item": dict,
+                    "config": list(original_config),
+                }
+                When Fail
+                param = {"flag": False, "item": {}, "config": list(original_config)}
+                """
                 params = redirect_flow.run(self.__config, data_connection_id)
-                print params
+
                 if params["flag"]:
+                    # redirect success
                     self.__used_config.append(params["item"])
                     self.__config = params["config"]
                     result = {
@@ -45,9 +56,10 @@ class Router:
                         u"socket": params["item"],
                         u"status": params["status"].json(),
                     }
-                    print "event sink put"
                     self.__event_sink.put(DataEventItem(ResultType.DATA.value, result))
                 else:
+                    # Abort the redirect
+                    # This happens when there is no redirect information about the Connection
                     continue
             elif event.type() == u"CLOSE":
                 return

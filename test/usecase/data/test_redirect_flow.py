@@ -49,31 +49,22 @@ class TestRedirectFlow:
     def test_redirect_flow_success(self, mocker):
         # check metadata
         mock_status = mocker.patch("infra.data.api.DataApi.status_request")
-        mock_status.return_value = {
-            u"remote_id": u"peer_id",
-            u"buffersize": 0,
-            u"label": u"",
-            u"metadata": u"data",
-            u"open": True,
-            u"reliable": True,
-            u"serialization": u"BINARY_UTF8",
-            u"type": u"DATA",
-        }
+        mock_status.return_value = self.status
 
         #  open data sock
         mock_open_sock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
-        mock_open_sock.return_value = {
-            u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-            u"port": 10001,
-            u"ip_v4": "127.0.0.1",
-        }
+        mock_open_sock.return_value = DataSocket(
+            u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211", 10001, ip_v4=u"127.0.0.1",
+        )
 
         # redirect
         mock_redirect = mocker.patch("infra.data.api.DataApi.redirect_request")
         mock_redirect.return_value = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
         assert self.redirect_flow.run(self.config, self.data_connection_id) == {
             "flag": True,
-            "data_id": DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"),
+            "data_socket": DataSocket(
+                u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211", 10001, ip_v4=u"127.0.0.1",
+            ),
             "status": self.status,
             "item": {
                 "name": "data",
@@ -90,24 +81,14 @@ class TestRedirectFlow:
     def test_redirect_flow_no_config(self, mocker):
         # check metadata
         mock_status = mocker.patch("infra.data.api.DataApi.status_request")
-        mock_status.return_value = {
-            u"remote_id": u"peer_id",
-            u"buffersize": 0,
-            u"label": u"",
-            u"metadata": u"data3",
-            u"open": True,
-            u"reliable": True,
-            u"serialization": u"BINARY_UTF8",
-            u"type": u"DATA",
-        }
+        self.status.metadata = u"data0"
+        mock_status.return_value = self.status
 
         #  open data sock
         mock_open_sock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
-        mock_open_sock.return_value = {
-            u"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
-            u"port": 10001,
-            u"ip_v4": "127.0.0.1",
-        }
+        mock_open_sock.return_value = DataSocket(
+            u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211", 10001, ip_v4=u"127.0.0.1",
+        )
 
         mock_disconnect = mocker.patch("infra.data.api.DataApi.disconnect_request")
         mock_disconnect.return_value = {}
