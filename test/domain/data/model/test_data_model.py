@@ -271,89 +271,83 @@ class TestConnectInnerOption:
 
 
 class TestConnectParameters:
+    def setup_method(self, method):
+        self.peer_info = PeerInfo(
+            u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"
+        )
+        self.target_id = "target_id"
+        self.data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+        self.socket = Socket(10000, ip_v4=u"127.0.0.1")
+        self.options = {
+            "metadata": "string",
+            "serialization": "string",
+            "dcInit": {
+                "ordered": True,
+                "maxPacketLifeTime": 0,
+                "maxRetransmits": 0,
+                "protocol": "string",
+                "negotiated": True,
+                "id": 0,
+                "priority": "string",
+            },
+        }
+        self.param = ConnectParameters(
+            self.peer_info,
+            self.target_id,
+            data_id=self.data_id,
+            redirect_params=self.socket,
+            options=self.options,
+        )
+
+    def teardown_method(self, method):
+        del self.peer_info
+        del self.target_id
+        del self.data_id
+        del self.socket
+        del self.options
+
     def test_connect_parameters_compare_same(self):
-        param = ConnectParameters(
-            PeerInfo(u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"),
-            "target_id",
-            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
-            Socket(10000, ip_v4=u"127.0.0.1"),
-            options={
-                "metadata": "string",
-                "serialization": "string",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "string",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "string",
-                },
-            },
+        assert self.param == ConnectParameters(
+            self.peer_info,
+            self.target_id,
+            data_id=self.data_id,
+            redirect_params=self.socket,
+            options=self.options,
         )
-
-        param2 = ConnectParameters(
-            PeerInfo(u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"),
-            "target_id",
-            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
-            Socket(10000, ip_v4=u"127.0.0.1"),
-            options={
-                "metadata": "string",
-                "serialization": "string",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "string",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "string",
-                },
-            },
-        )
-
-        assert param == param2
 
     def test_connect_parameters_json(self):
-        param = ConnectParameters(
-            PeerInfo(u"peer_id", u"pt-9749250e-d157-4f80-9ee2-359ce8524308"),
-            "target_id",
-            DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211",),
-            Socket(10000, ip_v4=u"127.0.0.1"),
-            options={
-                "metadata": "string",
-                "serialization": "string",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "string",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "string",
-                },
-            },
-        )
+        assert self.param.json() == {
+            "peer_id": self.peer_info.id(),
+            "token": self.peer_info.token(),
+            "options": self.options,
+            "target_id": self.target_id,
+            "params": {"data_id": self.data_id.id()},
+            "redirect_params": self.socket.json(),
+        }
+
+    def test_no_optional_field(self):
+        param = ConnectParameters(self.peer_info, self.target_id)
 
         assert param.json() == {
-            "peer_id": u"peer_id",
-            "token": u"pt-9749250e-d157-4f80-9ee2-359ce8524308",
-            "options": {
-                "metadata": "string",
-                "serialization": "string",
-                "dcInit": {
-                    "ordered": True,
-                    "maxPacketLifeTime": 0,
-                    "maxRetransmits": 0,
-                    "protocol": "string",
-                    "negotiated": True,
-                    "id": 0,
-                    "priority": "string",
-                },
-            },
-            "target_id": "target_id",
-            "params": {"data_id": u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211"},
-            "redirect_params": {"ip_v4": u"127.0.0.1", "port": 10000},
+            "peer_id": self.peer_info.id(),
+            "token": self.peer_info.token(),
+            "target_id": self.target_id,
+            "options": {},
+        }
+
+    def test_from_json(self):
+        param = ConnectParameters.from_json(
+            {
+                "peer_id": self.peer_info.id(),
+                "token": self.peer_info.token(),
+                "target_id": self.target_id,
+            }
+        )
+        assert param.json() == {
+            "peer_id": self.peer_info.id(),
+            "token": self.peer_info.token(),
+            "target_id": self.target_id,
+            "options": {},
         }
 
 

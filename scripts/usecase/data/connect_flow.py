@@ -10,6 +10,7 @@ from usecase.data.status_request import StatusRequest
 from usecase.data.connect_request import ConnectRequest
 from usecase.data.disconnect_request import DisconnectRequest
 from usecase.data.open_data_socket_request import OpenDataSocketRequest
+from error import MyException
 
 
 class ConnectFlow:
@@ -25,32 +26,23 @@ class ConnectFlow:
         inject = pinject.new_object_graph(binding_specs=[BindingSpec()])
 
         # parse config
-        # peer_id is a mandatory field for the CONNECT API
-        if "peer_id" not in config:
-            return {u"flag": False, u"error": u"no_peer_id"}
-        if "token" not in config:
-            return {u"flag": False, u"error": u"no_token"}
+        try:
+            connect_parameters = ConnectParameters.from_json(config)
+        except MyException as e:
+            return {u"flag": False, u"error": e.message()}
 
-        peer_info = PeerInfo(config["peer_id"], config["token"])
-        socket = {}
-        if "redirect_params" in config:
-            redirect_params = {}
-            if "ip_v4" in redirect_params:
-                socket = Socket(redirect_params["port"], ip_v4=redirect_params["ip_v4"])
-            else:
-                socket = Socket(redirect_params["port"], ip_v6=redirect_params["ip_v6"])
         # create data socket
         open_socket_request = inject.provide(OpenDataSocketRequest)
         data_socket = open_socket_request.run()
 
-        param = {}
-        if "options" in config:
-            param = config["options"]
-
         # connect
         connect_request = inject.provide(ConnectRequest)
         data_connection_id = connect_request.run(
-            peer_info, config["target_id"], data_socket.data_id, socket, param
+            connect_parameters.peer_info(),
+            connect_parameters.target_id(),
+            data_socket.data_id,
+            connect_parameters.redirect_params(),
+            connect_parameters.options().json(),
         )
 
         # if success

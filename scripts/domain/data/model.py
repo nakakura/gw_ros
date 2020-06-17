@@ -257,7 +257,9 @@ class ConnectInnerOption:
 
 
 class ConnectParameters:
-    def __init__(self, peer_info, target_id, data_id, redirect_params, options=None):
+    def __init__(
+        self, peer_info, target_id, data_id=None, redirect_params=None, options=None
+    ):
         """
         Body of POST /data/connections
         http://35.200.46.204/#/2.data/data_connections_create
@@ -274,7 +276,33 @@ class ConnectParameters:
         self.__target_id = target_id
         self.__data_id = data_id
         self.__redirect_params = redirect_params
+        print options
+        import rospy
+
+        rospy.logerr(options)
         self.__options = ConnectInnerOption(options)
+
+    @staticmethod
+    def from_json(params):
+        """
+        :param dict params:
+        :return: ConnectParameters
+        :rtype: ConnectParameters
+        """
+        if not "peer_id" in params:
+            raise MyException("no peer_id")
+        if not "token" in params:
+            raise MyException("no token")
+        if not "target_id" in params:
+            raise MyException("no target_id")
+
+        return ConnectParameters(
+            PeerInfo(params["peer_id"], params["token"]),
+            params["target_id"],
+            data_id=params.get("data_id"),
+            redirect_params=params.get("redirect_params"),
+            options=params.get("options"),
+        )
 
     def json(self):
         """
@@ -282,15 +310,30 @@ class ConnectParameters:
         :return: json
         :rtype: dict
         """
-
-        return {
+        param = {
             "peer_id": self.__peer_info.id(),
             "token": self.__peer_info.token(),
             "target_id": self.__target_id,
-            "params": {"data_id": self.__data_id.id()},
-            "redirect_params": self.__redirect_params.json(),
             "options": self.__options.json(),
         }
+        if not self.__data_id is None:
+            param["params"] = {"data_id": self.__data_id.id()}
+        if not self.__redirect_params is None:
+            param["redirect_params"] = self.__redirect_params.json()
+
+        return param
+
+    def peer_info(self):
+        return self.__peer_info
+
+    def target_id(self):
+        return self.__target_id
+
+    def redirect_params(self):
+        return self.__redirect_params
+
+    def options(self):
+        return self.__options
 
     def __eq__(self, other):
         if not isinstance(other, ConnectParameters):

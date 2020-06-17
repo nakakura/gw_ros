@@ -90,7 +90,7 @@ class TestConnectFlow:
         # peer_id is a mandatory field for the CONNECT API
         assert connect_flow.run(self.config) == {
             u"flag": False,
-            u"error": u"no_peer_id",
+            u"error": u"no peer_id",
         }
 
     def test_connect_flow_no_token(self, mocker):
@@ -99,5 +99,5 @@ class TestConnectFlow:
         # peer_id is a mandatory field for the CONNECT API
         assert connect_flow.run(self.config) == {
             u"flag": False,
-            u"error": u"no_token",
+            u"error": u"no token",
         }
