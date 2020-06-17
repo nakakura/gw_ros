@@ -13,6 +13,7 @@ sys.path.insert(
 from usecase.data.connect_flow import ConnectFlow
 from domain.data.model import Status, DataSocket
 from domain.common.model import DataConnectionId
+from error import MyException
 
 
 class TestConnectFlow:
@@ -101,3 +102,45 @@ class TestConnectFlow:
             u"flag": False,
             u"error": u"no token",
         }
+
+    def test_connect_flow_connect_fail(self, mocker):
+        connect_flow = ConnectFlow()
+
+        status = Status(
+            {
+                u"remote_id": u"ID_BAR",
+                u"buffersize": 0,
+                u"label": u"string",
+                u"metadata": u"metadata",
+                u"open": True,
+                u"reliable": True,
+                u"serialization": u"BINARY_UTF8",
+                u"type": u"DATA",
+            }
+        )
+
+        port = 10000
+        ip_v4 = u"127.0.0.1"
+        data_sock = DataSocket(
+            u"da-9749250e-d157-4f80-9ee2-359ce8524308", port, ip_v4=ip_v4
+        )
+        mock_open_data_sock = mocker.patch(
+            "infra.data.api.DataApi.open_data_socket_request"
+        )
+        mock_open_data_sock.return_value = data_sock
+
+        mock_connect = mocker.patch("infra.data.api.DataApi.connect_request")
+        mock_connect.side_effect = MyException(
+            {"url": "URL", "error": "403 Forbidden", "status": 403}
+        )
+
+        import json
+
+        assert json.loads(connect_flow.run(self.config)["error"]) == {
+            "url": "URL",
+            "error": "403 Forbidden",
+            "status": 403,
+        }
+
+
+# {"url": resp.url, "error": "403 Forbidden", "status": 403}
