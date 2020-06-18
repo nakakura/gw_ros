@@ -26,8 +26,6 @@ class Router:
 
     def run(self):
         for event in self.__queue.generate():
-            print event.json()
-            print event.type()
             if event.type() == u"CONNECTION":
                 redirect_flow = RedirectFlow()
                 data_connection_id = event.data_connection_id()
@@ -61,6 +59,9 @@ class Router:
                     # Abort the redirect
                     # This happens when there is no redirect information about the Connection
                     continue
+            elif event.type() == u"CONNECT":
+                print "connect flow load"
+                pass
             elif event.type() == u"CLOSE":
                 return
             elif event.type() == u"OPEN":

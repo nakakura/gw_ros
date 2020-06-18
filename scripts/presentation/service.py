@@ -4,6 +4,7 @@ import Queue
 import simplejson as json
 from simplejson import JSONDecodeError
 
+from usecase.user_message import UserMessage
 from helper.multi_queue import MultiQueue
 
 
@@ -52,8 +53,19 @@ def skyway_events_server(queue):
 
 def control_message_response(queue):
     def inner(req):
-        queue.put(req.json)
-        return SkyWayControlsResponse('{"status": "accepted"}')
+        try:
+            queue.put(UserMessage(json.loads(req.json)))
+            return SkyWayControlsResponse('{"status": "accepted"}')
+        except JSONDecodeError as e:
+            return SkyWayEventsResponse(
+                json.dumps(
+                    {
+                        u"type": u"ERROR",
+                        u"error_message": u"JSON_DECODE_ERROR",
+                        u"detail": u"{}".format(e),
+                    }
+                )
+            )
 
     return inner
 
