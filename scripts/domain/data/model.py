@@ -28,7 +28,13 @@ class Socket:
             self.__is_ip_v4 = True
         else:
             self.__is_ip_v4 = False
+
+        if isinstance(ip_v4, str):
+            ip_v4 = ip_v4.decode("utf-8")
         self.__ip_v4 = ip_v4
+
+        if isinstance(ip_v6, str):
+            ip_v6 = ip_v6.decode("utf-8")
         self.__ip_v6 = ip_v6
 
     def port(self):
@@ -276,7 +282,6 @@ class ConnectParameters:
         self.__target_id = target_id
         self.__data_id = data_id
         self.__redirect_params = redirect_params
-        print options
         import rospy
 
         rospy.logerr(options)
@@ -363,10 +368,6 @@ class RedirectParameters:
         :rtype: dict
         """
 
-        print "hoge"
-        print self.__data_id
-        print self.__data_id.id()
-        print self.__redirect_params.json()
         return {
             "feed_params": {"data_id": self.__data_id.id()},
             "redirect_params": self.__redirect_params.json(),
@@ -454,6 +455,8 @@ class Status:
         """
 
         self.remote_id = json["remote_id"]
+        if isinstance(self.remote_id, str):
+            self.remote_id = self.remote_id.decode("utf-8")
         if not isinstance(self.remote_id, unicode):
             raise MyException("invalid parameter of remote_id in Status")
 
@@ -462,10 +465,14 @@ class Status:
             raise MyException("invalid parameter of buffersize in Status")
 
         self.label = json["label"]
+        if isinstance(self.label, str):
+            self.label = self.label.decode("utf-8")
         if not isinstance(self.label, unicode):
             raise MyException("invalid parameter of label in Status")
 
         self.metadata = json["metadata"]
+        if isinstance(self.metadata, str):
+            self.metadata = self.metadata.decode("utf-8")
         if not isinstance(self.metadata, unicode):
             raise MyException("invalid parameter of metadata in Status")
 
@@ -478,10 +485,14 @@ class Status:
             raise MyException("invalid parameter of reliable in Status")
 
         self.serialization = json["serialization"]
+        if isinstance(self.serialization, str):
+            self.serialization = self.serialization.decode("utf-8")
         if not isinstance(self.serialization, unicode):
             raise MyException("invalid parameter of serialization in Status")
 
         self.type = json["type"]
+        if isinstance(self.type, str):
+            self.type = self.type.decode("utf-8")
         if not isinstance(self.type, unicode):
             raise MyException("invalid parameter of type in Status")
 
