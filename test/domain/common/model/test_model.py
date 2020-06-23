@@ -52,7 +52,14 @@ class TestPeerInfo:
             del self.json["turn"]
             return self.json
 
-    def test_create_peer_info_success(self):
+    def test_create_peer_info_success_str(self):
+        peer_info = PeerInfo("my_id", "pt-102127d9-30de-413b-93f7-41a33e39d82b")
+        assert peer_info.id() == u"my_id", "peer_id is not correct"
+        assert (
+            peer_info.token() == u"pt-102127d9-30de-413b-93f7-41a33e39d82b"
+        ), "token is not correct"
+
+    def test_create_peer_info_success_unicode(self):
         peer_info = PeerInfo(u"my_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b")
         assert peer_info.id() == u"my_id", "peer_id is not correct"
         assert (
@@ -62,8 +69,6 @@ class TestPeerInfo:
     @pytest.mark.parametrize(
         "peer_id, token",
         [
-            ("not_unicode_id", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
-            (u"peer_id", "not_unicode_token"),
             (u"", u"pt-102127d9-30de-413b-93f7-41a33e39d82b"),
             (u"token_len_0", u""),
             (u"short_token", u"pt-102127d9-30de-413b-93f7-41a33e39d82"),
@@ -76,7 +81,7 @@ class TestPeerInfo:
 
     def test_compare_same_data_id(self):
         data_id = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
-        data_id2 = DataId(u"da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
+        data_id2 = DataId("da-50a32bab-b3d9-4913-8e20-f79c90a6a211")
         assert data_id == data_id2
 
     def test_compare_not_same_data_id(self):
@@ -87,8 +92,6 @@ class TestPeerInfo:
     @pytest.mark.parametrize(
         "data_id",
         [
-            # not unicode
-            "da-50a32bab-b3d9-4913-8e20-f79c90a6a211",
             # short
             u"da-50a32bab-b3d9-4913-8e20-f79c90a6a21",
             # long
@@ -106,7 +109,7 @@ class TestPeerInfo:
             u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
         )
         data_connection_id2 = DataConnectionId(
-            u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
+            "dc-50a32bab-b3d9-4913-8e20-f79c90a6a211"
         )
         assert data_connection_id == data_connection_id2
 
@@ -122,8 +125,6 @@ class TestPeerInfo:
     @pytest.mark.parametrize(
         "data_connection_id",
         [
-            # not unicode
-            "dc-50a32bab-b3d9-4913-8e20-f79c90a6a211",
             # short
             u"dc-50a32bab-b3d9-4913-8e20-f79c90a6a21",
             # long

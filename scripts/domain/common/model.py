@@ -12,10 +12,14 @@ class PeerInfo:
 
     def __init__(self, peer_id, token):
         # type: (unicode, unicode) -> None
+        if isinstance(peer_id, str):
+            peer_id = peer_id.decode("utf-8")
         if not isinstance(peer_id, unicode) or len(peer_id) == 0:
             raise MyException("peer_id: invalid parameter in PeerInfo")
         self.__peer_id = peer_id
 
+        if isinstance(token, str):
+            token = token.decode("utf-8")
         # TOKEN is prefix(pt-, 3words) + UUID(36words) = 39words
         if (
             not isinstance(token, unicode)
@@ -53,6 +57,8 @@ class DataId:
         :param unicode data_id: ID to identify the socket that will receive the data from the end user program
         """
 
+        if isinstance(data_id, str):
+            data_id = data_id.decode("utf-8")
         # TOKEN is prefix(da-, 3words) + UUID(36words) = 39words
         if (
             not isinstance(data_id, unicode)
@@ -79,6 +85,9 @@ class DataId:
 class DataConnectionId:
     def __init__(self, data_connection_id):
         # type: (unicode) -> None
+
+        if isinstance(data_connection_id, str):
+            data_connection_id = data_connection_id.decode("utf-8")
 
         # TOKEN is prefix(dc-, 3words) + UUID(36words) = 39words
         if (
