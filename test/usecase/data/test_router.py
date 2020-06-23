@@ -20,9 +20,181 @@ from domain.data.model import (
 )
 from domain.common.model import DataId, DataConnectionId, PeerInfo
 from domain.peer.model import PeerEvent
+from usecase.user_message import UserMessage
+
+# connect to neighbour
+class TestRouterConnect:
+    def setup_method(self, method):
+        # setup queues
+        self.peer_event_queue = multiprocessing.Queue()
+        self.ros_event_queue = multiprocessing.Queue()
+        self.event_sink = multiprocessing.Queue()
+        # ---------- define parameters ----------
+        self.config = [
+            {
+                u"name": u"data",
+                u"redirect_params": {u"ip_v4": u"127.0.0.1", u"port": 10000},
+            },
+            {
+                u"name": u"data2",
+                u"redirect_params": {u"ip_v6": u"fe00::1", u"port": 10001},
+            },
+        ]
+        self.original_config = copy.deepcopy(self.config)
+        self.peer_info = PeerInfo(u"hoge", u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af")
+        self.redirect_params = {u"ip_v4": u"127.0.0.1", u"port": 10000}
+        self.status = Status(
+            {
+                u"remote_id": u"peer_id",
+                u"buffersize": 0,
+                u"label": u"",
+                u"metadata": u"data",
+                u"open": True,
+                u"reliable": True,
+                u"serialization": u"BINARY_UTF8",
+                u"type": u"DATA",
+            }
+        )
+        self.close_event = PeerEvent(
+            {"event": "CLOSE", "params": self.peer_info.json()}
+        )
+        self.data_id = DataId(u"da-102127d9-30de-413b-93f7-41a33e39d82b")
+        self.user_message = {
+            u"type": u"CONNECT",
+            u"value": {
+                u"peer_id": self.peer_info.id(),
+                u"token": self.peer_info.token(),
+                u"options": {
+                    u"metadata": "string",
+                    u"serialization": "string",
+                    u"dcInit": {
+                        u"ordered": True,
+                        u"maxPacketLifeTime": 0,
+                        u"maxRetransmits": 0,
+                        u"protocol": "H264",
+                        u"negotiated": True,
+                        u"id": 0,
+                        u"priority": "HIGH",
+                    },
+                },
+                u"target_id": u"ID_BAR",
+                u"redirect_params": self.redirect_params,
+            },
+        }
+        # ---------- setup router ----------
+        self.router = Router(
+            self.original_config,
+            MultiQueue(self.ros_event_queue, self.peer_event_queue),
+            self.event_sink,
+        )
+        # ---------- define result ----------
+        self.result = {
+            u"type": u"CONNECTION",
+            u"data_socket": DataSocket(
+                self.data_id.id(), 10000, ip_v4=u"127.0.0.1"
+            ).json(),
+            u"socket": {u"name": u"data", u"redirect_params": self.redirect_params},
+            u"status": self.status.json(),
+        }
+
+    def teardown_method(self, method):
+        del self.result
+        del self.router
+        del self.user_message
+        del self.data_id
+        del self.close_event
+        del self.status
+        del self.redirect_params
+        del self.peer_info
+        del self.original_config
+        del self.config
+        del self.event_sink
+        del self.ros_event_queue
+        del self.peer_event_queue
+
+    def test_connect_method(self, mocker):
+        result = DataEventItem(u"CONNECTION", self.result)
+
+        # ---------- set events ----------
+        message = UserMessage(self.user_message)
+        self.ros_event_queue.put(message)
+        self.peer_event_queue.put(self.close_event)
+
+        # ---------- run ----------
+        mock = mocker.patch("usecase.data.connect_flow.ConnectFlow.run")
+        mock.return_value = {
+            u"flag": True,
+            u"socket": self.redirect_params,
+            u"data_socket": DataSocket(self.data_id.id(), 10000, ip_v4=u"127.0.0.1"),
+            u"status": self.status.json(),
+        }
+        mock_open_sock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
+        mock_open_sock.return_value = DataSocket(
+            self.data_id.id(), 10001, ip_v4=u"127.0.0.1",
+        )
+
+        self.router.run()
+
+        # ---------- evaluate ----------
+        assert self.event_sink.get(timeout=0.1) == result
+        with pytest.raises(Queue.Empty):
+            self.event_sink.get(timeout=0.1)
+
+    def test_connect_method_without_redirect(self, mocker):
+        del self.result["socket"]
+        result = DataEventItem(u"CONNECTION", self.result)
+
+        # ---------- set events ----------
+        del self.user_message["value"]["redirect_params"]
+        message = UserMessage(self.user_message)
+        self.ros_event_queue.put(message)
+        self.peer_event_queue.put(self.close_event)
+
+        # ---------- run ----------
+        mock = mocker.patch("usecase.data.connect_flow.ConnectFlow.run")
+        mock.return_value = {
+            u"flag": True,
+            u"data_socket": DataSocket(self.data_id.id(), 10000, ip_v4=u"127.0.0.1"),
+            u"status": self.status.json(),
+        }
+        mock_open_sock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
+        mock_open_sock.return_value = DataSocket(
+            self.data_id.id(), 10001, ip_v4=u"127.0.0.1",
+        )
+
+        self.router.run()
+
+        # ---------- evaluate ----------
+        assert self.event_sink.get(timeout=0.1) == result
+        with pytest.raises(Queue.Empty):
+            self.event_sink.get(timeout=0.1)
+
+    def test_connect_method_err(self, mocker):
+        result = DataEventItem(u"CONNECTION_FAILED", {"error": "ERROR MESSAGE"})
+
+        # ---------- set events ----------
+        message = UserMessage(self.user_message)
+        self.ros_event_queue.put(message)
+        self.peer_event_queue.put(self.close_event)
+
+        # ---------- run ----------
+        mock = mocker.patch("usecase.data.connect_flow.ConnectFlow.run")
+        mock.return_value = {u"flag": False, u"error": "ERROR MESSAGE"}
+        mock_open_sock = mocker.patch("infra.data.api.DataApi.open_data_socket_request")
+        mock_open_sock.return_value = DataSocket(
+            self.data_id.id(), 10001, ip_v4=u"127.0.0.1",
+        )
+
+        self.router.run()
+
+        # ---------- evaluate ----------
+        assert self.event_sink.get(timeout=0.1) == result
+        with pytest.raises(Queue.Empty):
+            self.event_sink.get(timeout=0.1)
 
 
-class TestRouter:
+# connect from neighbour
+class TestRouterConnection:
     def setup_method(self, method):
         self.peer_info = PeerInfo(u"hoge", u"pt-870c2c49-c16d-4c69-b1ad-fec7550564af")
         self.peer_event_queue = multiprocessing.Queue()
@@ -122,6 +294,7 @@ class TestRouter:
             mocker.call(self.original_config, self.data_connection_id)
         ]
         assert self.event_sink.get() == self.result
+
         with pytest.raises(Queue.Empty):
             self.event_sink.get(timeout=0.1)
 

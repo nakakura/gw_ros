@@ -51,6 +51,7 @@ class ConnectFlow:
             return {
                 u"flag": True,
                 u"socket": data_socket.socket().json(),
+                u"data_socket": data_socket,
                 u"status": status.json(),
             }
         except MyException as e:

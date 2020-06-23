@@ -82,6 +82,7 @@ class TestConnectFlow:
         assert connect_flow.run(self.config) == {
             u"flag": True,
             u"socket": {u"ip_v4": ip_v4, u"port": port},
+            u"data_socket": data_sock,
             u"status": status.json(),
         }
 

@@ -4,6 +4,7 @@ from enum import Enum
 
 from helper.multi_queue import MultiQueue
 from domain.data.model import DataEventItem
+from usecase.data.connect_flow import ConnectFlow
 from usecase.data.redirect_flow import RedirectFlow
 from usecase.common import ResultType
 
@@ -60,8 +61,26 @@ class Router:
                     # This happens when there is no redirect information about the Connection
                     continue
             elif event.type() == u"CONNECT":
-                print "connect flow load"
-                pass
+                connect_flow = ConnectFlow()
+                config = event.json()
+                val = connect_flow.run(config)
+                if val["flag"]:
+                    ret_value = {
+                        u"type": u"CONNECTION",
+                        u"data_socket": val["data_socket"].json(),
+                        u"status": val["status"],
+                    }
+                    if "redirect_params" in config:
+                        ret_value["socket"] = {
+                            u"name": u"data",
+                            u"redirect_params": config[u"redirect_params"],
+                        }
+                    self.__event_sink.put(
+                        DataEventItem(ResultType.DATA.value, ret_value)
+                    )
+                else:
+                    del val["flag"]
+                    self.__event_sink.put(DataEventItem("CONNECTION_FAILED", val))
             elif event.type() == u"CLOSE":
                 return
             elif event.type() == u"OPEN":
