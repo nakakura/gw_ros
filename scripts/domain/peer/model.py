@@ -150,6 +150,8 @@ class MediaConnectionId:
     def __init__(self, media_connection_id):
         # type: (unicode) -> None
 
+        if isinstance(media_connection_id, str):
+            media_connection_id = media_connection_id.decode("utf-8")
         # TOKEN is prefix(mc-, 3words) + UUID(36words) = 39words
         if (
             not isinstance(media_connection_id, unicode)
@@ -181,6 +183,8 @@ class PeerStatus:
         :param bool disconnected: shows the peer object is disconnected or not
         """
 
+        if isinstance(peer_id, str):
+            peer_id = peer_id.decode("utf-8")
         if not isinstance(peer_id, unicode) or len(peer_id) == 0:
             raise MyException("peer_id: invalid parameter in PeerStatus")
         self.__peer_id = peer_id

@@ -44,7 +44,6 @@ class Router:
                 param = {"flag": False, "item": {}, "config": list(original_config)}
                 """
                 params = redirect_flow.run(self.__config, data_connection_id)
-
                 if params["flag"]:
                     # redirect success
                     self.__used_config.append(params["item"])

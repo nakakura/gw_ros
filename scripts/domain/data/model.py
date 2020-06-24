@@ -282,9 +282,6 @@ class ConnectParameters:
         self.__target_id = target_id
         self.__data_id = data_id
         self.__redirect_params = redirect_params
-        import rospy
-
-        rospy.logerr(options)
         self.__options = ConnectInnerOption(options)
 
     @staticmethod
