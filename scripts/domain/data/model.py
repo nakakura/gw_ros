@@ -18,6 +18,10 @@ class Socket:
             raise MyException("invalid port num")
         self.__port = port
 
+        if isinstance(ip_v4, str):
+            ip_v4 = ip_v4.decode("utf-8")
+        if isinstance(ip_v6, str):
+            ip_v6 = ip_v6.decode("utf-8")
         if not isinstance(ip_v4, unicode) or not isinstance(ip_v6, unicode):
             raise MyException("invalid address info")
 
@@ -297,12 +301,19 @@ class ConnectParameters:
             raise MyException("no token")
         if not "target_id" in params:
             raise MyException("no target_id")
+        redirect_params = None
+        if "redirect_params" in params:
+            sock = params["redirect_params"]
+            if "ip_v4" in sock:
+                redirect_params = Socket(sock["port"], ip_v4=sock["ip_v4"])
+            elif "ip_v6" in sock:
+                redirect_params = Socket(sock["port"], ip_v6=sock["ip_v6"])
 
         return ConnectParameters(
             PeerInfo(params["peer_id"], params["token"]),
             params["target_id"],
             data_id=params.get("data_id"),
-            redirect_params=params.get("redirect_params"),
+            redirect_params=redirect_params,
             options=params.get("options"),
         )
 

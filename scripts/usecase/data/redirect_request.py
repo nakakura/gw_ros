@@ -21,5 +21,4 @@ class RedirectRequest:
         :return: data id
         :rtype: DataId
         """
-        print "in run"
         return self.__api.redirect_request(data_connection_id, redirect_params)

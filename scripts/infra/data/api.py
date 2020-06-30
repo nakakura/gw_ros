@@ -65,15 +65,11 @@ class DataApi(IDataApi):
         :return: data id
         :rtype: DataId
         """
-        print "redirect request"
-        print redirect_params
-        print redirect_params.json()
         json = self.__rest.put(
             "data/connections/{}".format(data_connection_id.id()),
             redirect_params.json(),
             200,
         )
-        print json
         return DataId(json["data_id"])
 
     def event(self, data_connection_id):

@@ -38,7 +38,7 @@ class ConnectFlow:
             data_connection_id = connect_request.run(
                 connect_parameters.peer_info(),
                 connect_parameters.target_id(),
-                data_socket.data_id,
+                data_socket.data_id(),
                 connect_parameters.redirect_params(),
                 connect_parameters.options().json(),
             )
@@ -55,7 +55,7 @@ class ConnectFlow:
                 u"status": status.json(),
             }
         except MyException as e:
-            # if connect fail -> return err
+            # if connect fail d -> return err
             import json
 
             return {u"flag": False, u"error": json.dumps(e.message())}

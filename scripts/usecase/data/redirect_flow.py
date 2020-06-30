@@ -56,11 +56,8 @@ class RedirectFlow:
             )
 
         params = RedirectParameters(data_socket.data_id(), socket)
-        print params
         redirect_request = inject.provide(RedirectRequest)
-        print "request"
         data_id = redirect_request.run(data_connection_id, params)
-        print "before return"
         # show the message to user
         return {
             "flag": True,
